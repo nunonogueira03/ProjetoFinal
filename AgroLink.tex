@@ -1,0 +1,163 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+		T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+	
+	\title{AgroLink}
+	
+	\author{\IEEEauthorblockN{ Nuno Nogueira}
+		\IEEEauthorblockA{
+			\textit{Coimbra Business School}\\
+			Coimbra, Portugal \\
+			a2021156399@alumni.iscac.pt}
+			
+			\and
+			\IEEEauthorblockN{Paulo Gonçalves}
+				\IEEEauthorblockA{
+					\textit{Coimbra Business School}\\
+					Coimbra, Portugal \\
+					a2020130672@alumni.iscac.pt}
+			\and
+			\IEEEauthorblockN{Tiago Moita}
+				\IEEEauthorblockA{
+					\textit{Coimbra Business School}\\
+					Coimbra, Portugal \\
+					a2021142357@alumni.iscac.pt}
+	}
+
+	\maketitle
+	
+	\begin{abstract}
+		Trabalho realizado no contexto da cadeira de Projeto e Desenvolvimento Informático, no
+		terceiro ano da Licenciatura em Informática de Gestão. Pretende-se fundamentar a importância do recurso à inovação tecnologia, em áreas de produção agrícola, apoiando os sistemas de produtividade, através de uma economia de desenvolvimento sustentável.
+	\end{abstract}
+	
+	
+	\section{Introdução}
+	O presente projeto visa abordar o desenvolvimento de uma aplicação mobile para o setor
+	agrícola, tendo como objetivo principal a simplificação de atividades rotineiras deste setor,
+	podendo estas serem introduzidas num contexto virtual. Ao longo do documento,
+	exploraremos algumas funcionalidades desta aplicação, como as bases de trabalho e as formas
+	como será realizado o desenvolvimento do projeto. A relevância deste trabalho reside na sua
+	contribuição para o desenvolvimento de um setor agrícola, uma vez que se verificam em
+	muitas situações que o potencial das áreas de inovação tecnológica é desconhecido, apesar de
+	proporcionar uma resposta alternativa, com vista à simplificação de tarefa e à eficácia da
+	produtividade de forma sustentável.
+	
+	\section{Aplicação AgroLink}
+	
+	O nome da aplicação ”AgroLink” fundamenta-se na sua capacidade de servir como uma ponte
+	crucial entre a tecnologia e o meio agrícola. O termo” Agro” refere-se a agricultura e o sufixo
+	”Link” indica uma conexão ou ligação. Nesse sentido, a “AgroLink” será a representação de
+	mais uma tecnologia facilitadora do contexto agrícola. O slogan deste projeto será “Grow
+	Smarter Not Harder” que ´ visa apelar à compreensão de que muitas vezes existem meios mais
+	inovadores de maximizar o rendimento das produções e que nem sempre mais trabalho está
+	associado a uma maior produtividade. Em seguida apresentamos a imagem de marca da
+	aplicação que incorpora tanto o nome como o slogan elegidos[].
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\linewidth]{AGROLINK}
+	\caption{Logotipo - AgroLink}
+	\label{fig:agrolink}
+\end{figure}
+
+	
+	\section{Desenvolvimento}
+	\subsection{Plataformas}\label{AA}
+	Para uma melhor organização e estruturação do trabalho serão utilizadas duas plataformas, o
+	GitHub para a partilha do código e consequentes atualizações conforme o decorrer ˜ do
+	projeto e o Trello para facilitar a atribuição de tarefas e esquematizações da evolução.
+	Conforme o desenrolar do projeto serão necessários outros serviços para permitir a sua
+	concretização de forma mais correta possível, em termos de organização, como é o caso do
+	erdplus (construção do UML de suporte ˜ a base de dados) ou ` o DbSchema (visualização e
+	teste da base de dados), e de muitos outros.
+	
+	
+	\subsection{Metodologia}
+	
+	De forma a responder eficazmente às tarefas de todo o projeto, elegemos uma metodologia ágil para o desenvolvimento do software, permitindo adaptações rápidas e um sistema
+	contínuo de evolução e trabalho. Através desta metodologia procuramos aproveitar os
+	seguintes benefícios:
+	\begin{itemize}	
+	\item Entrega contínua de valor através de iterações curtas e entregas incrementais, podendo fornecer funcionalidades utilizáveis em intervalos regulares, garantindo assim uma constante atualização.
+	\item Maior flexibilidade para lidar com mudanças: Reconhecemos que os requisitos do projeto podem evoluir ao longo do tempo e que os aspetos implementados podem ser modificados ou removidos, respondendo assim de forma eficaz a todas as mudanças.
+	\item Colaboração efetiva e feedback contínuo: Desta forma promovemos uma cultura de colaboração entre todos os membros da equipa e os professores orientadores do projeto, permitindo aproveitar os insights valiosos de todas as partes interessadas e garantir que estamos a construir a solução certa, da melhor maneira possível.
+	\end{itemize}
+	Em termos práticos, adotaremos a estrutura do Scrum, que permite uma abordagem simples, incluindo sprints regulares de duas semanas, durante as quais nos concentraremos na implementação de funcionalidades específicas do produto. Realizar-se-ão curtas reuniões diárias (ou de dois em dois dias) para garantir que todos estão alinhados com os objetivos do sprint e para que possamos identificar rapidamente quaisquer obstáculos ou problemas que possam surgir. Pretendemos manter uma priorização flexível do Backlog, que será revisto no final de cada sprint e ajustado conforme necessário para refletir as mudanças nas necessidades da
+	aplicação.
+	
+	\subsection{Framework Python}\label{AA}
+	Para a implementação da aplicação será utilizada a linguagem de programação Python pela sua conhecida facelidade de apredizagem e utilização. 
+	
+	No que diz respeito à framework elegemos a Beeware, uma vez que oferece vários benefícios na simplificação do desenvolvimento aplicacional, nomeadamente:
+	\begin{itemize}
+	\item Desenvolvimento de aplicativos nativos, o que se torna crucial para oferecer uma experiência de utilizador integrada ao sistema operacional;
+	
+	\item Suporte multiplataforma de forma a atender às diferentes necessidades nos vários ambientes operativos;
+	
+	\item Fácil integração com tecnologias nativas;
+	
+	\item Uma comunidade forte, que facilitará a resolução de algumas dificuldades durante o desenvolvimento.	
+	\end{itemize}
+	
+	\subsection{Funcionalidades}
+	
+	A aplicação será uma visualização do mapa do terreno (Google Maps) dos produtos agrícolas, onde permitirá a inserção de dados e atualizações de eventos que ocorram na sua superfície. No mapa será possível visualizar as várias divisões do terreno, permitindo uma melhor segmentação das atividades. Será possível a introdução de comentários e o vínculo de trabalhadores associados às diferentes tarefas. Existirá 3 tipos de utilizadores: admin, supervisor e trabalhador. A aplicação deverá mandar alertas quando são realizados determinados tipos de eventos.
+	
+	\subsection{Aplicações Similares}
+	
+	O quadro na tabela~\ref{table:Comparação de Softwares} permite efetuar uma comparação entre quatro diferentes tipos de softwares que atuam facilitam os procedimentos do trabalho diário no ramo da agricultura.
+	
+	
+	1: WiseCrop
+	
+	2: Cropio
+	
+	3: FieldView
+	
+	3: AgroLink
+	
+	\begin{table}[h]
+		\begin{center}
+		 \caption{Comparação de Softwares}
+		 \label{table:Comparação de Softwares}
+		\begin{tabular}{ | c | c | c | c | c |  } 
+		\hline
+		 & 1 & 2 & 3 & 4 \\ 
+		\hline
+		Fácil Utilização & X & - & - & X \\ 
+		\hline
+		Incorporação com Mapa & X & X & X & X \\ 
+		\hline
+		Informação Metereológica & X & X & X & - \\ 
+		\hline
+		Adicionar Tarefas  & - & - & - & X \\ 
+		\hline
+		Gerir Atividade  & - & - & X & X \\ 
+		\hline
+		Planeamento & - & - & - & X \\ 
+		\hline
+		Vários Utilizadores & - & X & - & X \\ 
+		\hline
+		Alertas de Acontecimentos & X & X & - & X \\ 
+		\hline
+		Gestão Financeira & - & - & X & - \\ 
+		\hline
+		Possibilidade Offline & - & - & - & X \\ 
+		\hline
+		\end{tabular}
+		\end{center}
+	\end{table}
+
+\end{document}
