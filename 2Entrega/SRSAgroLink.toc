@@ -1,0 +1,25 @@
+\babel@toc {portuguese}{}\relax 
+\contentsline {chapter}{\numberline {1}Introdução}{4}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Objetivo}{4}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Convenções do Documento}{4}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Audiência pretendida e sugestões de leitura}{4}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Descrição geral}{6}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Perspetiva do produto}{6}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Características do Produto}{6}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Ambiente Operativo}{7}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Restrições de desenho e implementação}{8}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Características do Sistema}{9}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Gestão de Utilizadores}{9}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Descrição e Prioridade}{9}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Sequência de Resposta}{9}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Gestão de Relatórios}{10}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Descrição e Prioridade}{10}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Sequência de Resposta}{10}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Gestão de Frações}{11}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Descrição e Prioridade}{11}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Sequência de Resposta}{11}{subsection.3.3.2}%
+\contentsline {section}{\numberline {3.4}Gestão de Outras Operações}{12}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Descrição e Prioridade}{12}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Sequência de Resposta}{12}{subsection.3.4.2}%
+\contentsline {chapter}{\numberline {4}Anexos}{14}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Anexo A: Diagramas de Caso de Uso}{14}{section.4.1}%
