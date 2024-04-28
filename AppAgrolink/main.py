@@ -49,20 +49,5 @@ def main():
     #tabela_sem_data("exploracao",preencher_id_automaticamente("exploracao"),"testenome","testedescricao",2,1)
     #sao_iguais(2,2)
 
-
-''''    
-    id_fracao = 1
-    pontos_fracao = pontos_do_mapa_por_fracao(id_fracao)
-    print(f"Pontos do mapa da fração com ID {id_fracao}: {pontos_fracao}")
-
-    id_exploracao = 1
-    fracoes_exploracao = fracoes_por_exploracao(id_exploracao)
-    print(f"Frações da exploração com ID {id_exploracao}: {fracoes_exploracao}")
-
-    id_empresa = 1
-    exploracoes_empresa = exploracao_por_empresa(id_empresa)
-    print(f"Explorações da empresa com ID {id_empresa}: {exploracoes_empresa}")
-'''
-
 if __name__ == "__main__":
     main()

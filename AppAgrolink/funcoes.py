@@ -4,93 +4,8 @@ import hashlib
 import random
 import string
 
-
-
-def conectar_db():
-    # Conectar base de dados
-    connection_string = f"DRIVER={{SQL SERVER}};SERVER=NUNO;DATABASE=projetofinal;Trust_Connection=yes;"
-    return pyodbc.connect(connection_string)
-
-def sao_iguais(valor1, valor2):
-    # Converte os valores para minúsculas antes de compará-los
-    valor1_lower = str(valor1).lower()
-    valor2_lower = str(valor2).lower()
-
-    if valor1_lower == valor2_lower:
-        return print("sim")
-    else:
-        return print("nao")
-
-#teste para escrever na base de dados
-def escreverdb():
-    connection_string = f"""
-        DRIVER={{{'SQL SERVER'}}};
-        SERVER={'NUNO'};
-        DATABASE={'projetofinal'};
-        Trust_Connection=yes;
-    """
-    conn = pyodbc.connect(connection_string)
-    print(conn)
-    # Criação de um cursor
-    cursor = conn.cursor()
-
-    # Pedir ao usuário para inserir os valores
-    idempresa = input("Digite o ID da empresa: ")
-    nome = input("Digite o nome da empresa: ")
-
-    # Query SQL para inserir os valores
-    sql_query = "INSERT INTO empresa (idempresa, nome) VALUES (?, ?)"
-
-    # Executar a query
-    cursor.execute(sql_query, (idempresa, nome))
-
-    # Confirmar a transação
-    conn.commit()
-
-    # Fechar a conexão
-    conn.close()
-
-#verificar se existe alguma coluna com data na tabela
-def validar_se_possui_data_na_tabela(tabela, *args):
-    # Conectar base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
-
-    if [arg for arg in args if arg == "data"]:
-           return True
-    return False
-
-#Introduzir valores numa tabela em que uma das colunas é a data e introduz automáticmente a data
-def tabela_com_data(tabela, *args):
-    # Conectar base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
-
-    args_sem_data = [arg for arg in args if arg != "data"]
-    data_atual = datetime.now()
-
-    placeholders = ",".join(["?" for _ in args_sem_data])
-    sql_query = f"INSERT INTO {tabela} VALUES ({placeholders}, ?)"
-    cursor.execute(sql_query, args_sem_data + [data_atual])
-
-    # Confirmar a transação e fechar a conexão
-    conn.commit()
-    conn.close()
-
-#Introduzir valores numa tabela em que nenhuma das colunas possui data
-def tabela_sem_data(tabela, *args):
-    # Conectar base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
-
-    placeholders = ",".join(["?" for _ in args])
-    sql_query = f"INSERT INTO {tabela} VALUES ({placeholders})"
-    cursor.execute(sql_query, args)
-
-    # Confirmar a transação e fechar a conexão
-    conn.commit()
-    conn.close()
-
+#Funcoes Genericas
+#Adiciona os id's as tabelas automaticamente
 def preencher_id_automaticamente(tabela):
     # Conectar base de dados
     conn = conectar_db()
@@ -120,7 +35,14 @@ def preencher_id_automaticamente(tabela):
 
     # Se nenhuma coluna de ID for encontrada, retornar None
     return None
+#Coneccao com a base de dados
+def conectar_db():
+    # Conectar base de dados
+    connection_string = f"DRIVER={{SQL SERVER}};SERVER=NUNO;DATABASE=projetofinal;Trust_Connection=yes;"
+    return pyodbc.connect(connection_string)
 
+#Funcoes Empresa
+#Adicionar tabela empresa
 def adicionar_empresa(nome, numerocontribuinte, morada, contacto):
     # Conectar à base de dados
     conn = conectar_db()
@@ -158,64 +80,8 @@ def adicionar_empresa(nome, numerocontribuinte, morada, contacto):
     finally:
         conn.close()
 
-def adicionar_exploracao(nome_exploracao, idempresa):
-    # Conectar à base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
-    
-    try:
-        # Gerar ID automático para a nova exploração
-        idexploracao = preencher_id_automaticamente('exploracao')
-        # Inserir a exploração
-        cursor.execute("INSERT INTO exploracao (idexploracao, nome, idempresa) VALUES (?, ?, ?)", (idexploracao, nome_exploracao, idempresa))
-        conn.commit()
-        print("Exploração adicionada com sucesso.")
-        return idexploracao  # Retorna o ID da exploração para uso subsequente
-    except Exception as e:
-        print(f"Erro ao adicionar exploração: {e}")
-        conn.rollback()
-        return None
-    finally:
-        conn.close()
-
-def criptografar_password(password):
-    # Codificar a palavra em bytes
-    password_bytes = password.encode('utf-8')
-
-    # Criar um objeto de hash SHA-256
-    sha256 = hashlib.sha256()
-
-    # Atualizar o objeto de hash com os bytes da palavra
-    sha256.update(password_bytes)
-
-    # Gerar o hash da palavra
-    hash_password = sha256.hexdigest()
-
-    return hash_password
-
-# Função para gerar uma string aleatória de 20 caracteres (sal)
-def gerar_sal():
-    caracteres = string.ascii_letters + string.digits
-    sal = ''.join(random.choice(caracteres) for i in range(20))
-    return sal
-
-def criar_e_armazenar_password(idutilizador, password):
-    # Conectar base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
-    
-    # Gerar um novo sal
-    sal = gerar_sal()
-    # Armazenar o novo sal na base de dados
-    cursor.execute("UPDATE utilizador SET sal = ? WHERE id_utilizador = ?", (sal, idutilizador))
-    # Concatenar sal e senha e criptografar
-    encrypted_password = criptografar_password(sal + password)
-    # Atualizar a senha base ded dados
-    cursor.execute("UPDATE utilizador SET password = ? WHERE id_utilizador = ?", (encrypted_password, idutilizador))
-    # Commit e fechar conexão
-    conn.commit()
-    conn.close()
-
+#Funcoes Utilizador
+#Adicionar tabela utilizador 
 def adicionar_utilizador(nome, password, numfuncionario, gmail, nome_empresa):
     # Conectar à base de dados
     conn = conectar_db()
@@ -279,8 +145,51 @@ def adicionar_utilizador(nome, password, numfuncionario, gmail, nome_empresa):
 
     conn.close()
     return True, "Utilizador e contrato adicionados com sucesso!"
+#Validar se o email tem os caracteres caracteristicos
+def validar_email(email):
+    # Verificar se o email contém pelo menos um '@' e pelo menos um '.'
+    if '@' in email and '.' in email:
+        return True
+    else:
+        return False
+#Função para gerar uma string aleatória de 20 caracteres (sal)
+def gerar_sal():
+    caracteres = string.ascii_letters + string.digits
+    sal = ''.join(random.choice(caracteres) for i in range(20))
+    return sal
+#Adiciona o sal a password introduzida e codifica
+def criar_e_armazenar_password(idutilizador, password):
+    # Conectar base de dados
+    conn = conectar_db()
+    cursor = conn.cursor()
+    
+    # Gerar um novo sal
+    sal = gerar_sal()
+    # Armazenar o novo sal na base de dados
+    cursor.execute("UPDATE utilizador SET sal = ? WHERE id_utilizador = ?", (sal, idutilizador))
+    # Concatenar sal e senha e criptografar
+    encrypted_password = criptografar_password(sal + password)
+    # Atualizar a senha base ded dados
+    cursor.execute("UPDATE utilizador SET password = ? WHERE id_utilizador = ?", (encrypted_password, idutilizador))
+    # Commit e fechar conexão
+    conn.commit()
+    conn.close()
+#Funcao de criptografar a string password
+def criptografar_password(password):
+    # Codificar a palavra em bytes
+    password_bytes = password.encode('utf-8')
 
-# Função para validar senha no login
+    # Criar um objeto de hash SHA-256
+    sha256 = hashlib.sha256()
+
+    # Atualizar o objeto de hash com os bytes da palavra
+    sha256.update(password_bytes)
+
+    # Gerar o hash da palavra
+    hash_password = sha256.hexdigest()
+
+    return hash_password
+#Função para validar senha no login
 def validar_password(idutilizador, input_password):
     # Conectar base de dados
     conn = conectar_db()
@@ -292,16 +201,8 @@ def validar_password(idutilizador, input_password):
     # Criptografar senha de input com sal
     input_password_criptografada = criptografar_password(sal + input_password)
     conn.close()
-    return input_password_criptografada == stored_password    
-
-
-def validar_email(email):
-    # Verificar se o email contém pelo menos um '@' e pelo menos um '.'
-    if '@' in email and '.' in email:
-        return True
-    else:
-        return False
-    
+    return input_password_criptografada == stored_password  
+#Funcao de login
 def login(nome_empresa, numfuncionario, input_password):
     # Conectar à base de dados
     conn = conectar_db()
@@ -344,7 +245,241 @@ def login(nome_empresa, numfuncionario, input_password):
 
     conn.close()
 
-    # Verificar se ja existe algum valor igual na tabela
+#Funcoes de Exploracao
+# Adicionar nova uma exploração a uma empresa
+def adicionar_exploracao(nome_exploracao, idempresa):
+    # Conectar à base de dados
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    try:
+        # Gerar ID automático para a nova exploração
+        idexploracao = preencher_id_automaticamente('exploracao')
+        # Inserir a exploração
+        cursor.execute("INSERT INTO exploracao (idexploracao, nome, idempresa) VALUES (?, ?, ?)", (idexploracao, nome_exploracao, idempresa))
+        conn.commit()
+        print("Exploração adicionada com sucesso.")
+        return idexploracao  # Retorna o ID da exploração para uso subsequente
+    except Exception as e:
+        print(f"Erro ao adicionar exploração: {e}")
+        conn.rollback()
+        return None
+    finally:
+        conn.close()
+# Adicionar fracoes e pontos a uma exploracao
+def adicionar_fracoes_pontos(idexploracao, fracoes, pontos):
+    # Conectar à base de dados
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    try:
+        conn.autocommit = False
+        
+        # Inserir pontos no mapa com IDs automáticos
+        pontos_ids = {}
+        for i, ponto in enumerate(pontos):
+            idponto = preencher_id_automaticamente('pontomapa')
+            cursor.execute("INSERT INTO pontomapa (idponto, latitude, longitude, vertice) VALUES (?, ?, ?, 1)", (idponto, ponto['latitude'], ponto['longitude']))
+            pontos_ids[i] = idponto
+
+        # Inserir frações e associar pontos
+        for fra in fracoes:
+            if len(fra['indices_pontos']) < 3:
+                # Se uma fração tem menos de 3 pontos, não continuar com a inserção
+                print(f"Erro: A fração '{fra['nome']}' deve ter pelo menos 3 pontos para formar um polígono.")
+                conn.rollback()
+                return False
+
+            idfracao = preencher_id_automaticamente('fracao')
+            cursor.execute("INSERT INTO fracao (idfracao, nome, descricao, idexploracao) VALUES (?, ?, ?, ?)", (idfracao, fra['nome'], fra['descricao'], idexploracao))
+            
+            # Associar pontos da fração
+            for indice_ponto in fra['indices_pontos']:
+                idponto = pontos_ids[indice_ponto]
+                cursor.execute("INSERT INTO tem (idponto, idfracao) VALUES (?, ?)", (idponto, idfracao))
+        
+        conn.commit()
+        print("Frações e pontos adicionados com sucesso.")
+        return True
+    except Exception as e:
+        print(f"Erro ao adicionar frações e pontos: {e}")
+        conn.rollback()
+        return False
+    finally:
+        conn.close()
+#Função altera 4 tabelas sensor, medida, ponto mapa, tem
+def adicionar_sensor(nome_sensor, unidade, latitude, longitude, idfracao):
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    try:
+        conn.autocommit = False
+
+        # Adicionar ponto no mapa com vertice padrão como zero
+        idponto = preencher_id_automaticamente('pontomapa')
+        cursor.execute("INSERT INTO pontomapa (idponto, latitude, longitude, vertice) VALUES (?, ?, ?, 0)", (idponto, latitude, longitude))
+
+        # Adicionar sensor associado a esse ponto
+        idsensor = preencher_id_automaticamente('sensor')
+        cursor.execute("INSERT INTO sensor (idsensor, nome, unidade, idponto) VALUES (?, ?, ?, ?)", (idsensor, nome_sensor, unidade, idponto))
+
+        # Associar o ponto de mapa à fração na tabela 'tem'
+        cursor.execute("INSERT INTO tem (idponto, idfracao) VALUES (?, ?)", (idponto, idfracao))
+
+        # Adicionar uma medida inicial com valor zero e data atual
+        idmedida = preencher_id_automaticamente('medida')
+        data_atual = datetime.datetime.now().strftime('%Y-%m-%d')  # Formatação ISO da data
+        cursor.execute("INSERT INTO medida (idmedida, data, valor, idsensor) VALUES (?, ?, ?, ?)", (idmedida, data_atual, 0, idsensor))
+
+        conn.commit()
+        print("Sensor adicionado com sucesso com dados de medida zero, data atual e associado à fração.")
+        return True
+    except Exception as e:
+        print(f"Erro ao adicionar o sensor: {e}")
+        conn.rollback()
+        return False
+    finally:
+        conn.close()
+#Função que atualiza o valor do sensor e a data
+def atualizar_medida_sensor(idsensor, novo_valor):
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    try:
+        # Obter o ID da medida mais recente para o sensor especificado
+        cursor.execute("SELECT idmedida FROM medida WHERE idsensor = ? ORDER BY data DESC LIMIT 1", (idsensor,))
+        resultado = cursor.fetchone()
+        if not resultado:
+            print("Nenhuma medida encontrada para o sensor especificado.")
+            return False
+
+        idmedida = resultado[0]
+        data_atual = datetime.datetime.now().strftime('%Y-%m-%d')  # Formatação ISO da data atual
+
+        # Atualizar a medida com o novo valor e data atual
+        cursor.execute("UPDATE medida SET valor = ?, data = ? WHERE idmedida = ?", (novo_valor, data_atual, idmedida))
+        conn.commit()
+        print("Medida do sensor atualizada com sucesso.")
+        return True
+    except Exception as e:
+        print(f"Erro ao atualizar a medida do sensor: {e}")
+        conn.rollback()
+        return False
+    finally:
+        conn.close()
+#Funcao para criar tabela relatorio
+def criar_relatorio(nome, descricao, imagem, idfracao, nome_estado):
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    try:
+        conn.autocommit = False
+
+        # Adicionar o relatório
+        idrelatorio = preencher_id_automaticamente('registorelatorio')
+        cursor.execute("INSERT INTO registorelatorio (idrelatorio, nome, descricao, imagem, idfracao) VALUES (?, ?, ?, ?, ?)",
+                       (idrelatorio, nome, descricao, imagem, idfracao))
+
+        # Obter o ID do estado com base no nome fornecido
+        cursor.execute("SELECT idestador FROM estado WHERE nome = ?", (nome_estado,))
+        resultado = cursor.fetchone()
+        if not resultado:
+            print("Estado não encontrado.")
+            conn.rollback()
+            return False
+        idestador = resultado[0]
+
+        # Associar o relatório ao estado na tabela 'estar'
+        cursor.execute("INSERT INTO estar (idrelatorio, idestador) VALUES (?, ?)", (idrelatorio, idestador))
+
+        conn.commit()
+        print("Relatório criado com sucesso e estado associado.")
+        return True
+    except Exception as e:
+        print(f"Erro ao criar o relatório: {e}")
+        conn.rollback()
+        return False
+    finally:
+        conn.close()  
+
+#Outras
+#Testes
+def sao_iguais(valor1, valor2):
+    # Converte os valores para minúsculas antes de compará-los
+    valor1_lower = str(valor1).lower()
+    valor2_lower = str(valor2).lower()
+
+    if valor1_lower == valor2_lower:
+        return print("sim")
+    else:
+        return print("nao")
+#teste para escrever na base de dados
+def escreverdb():
+    connection_string = f"""
+        DRIVER={{{'SQL SERVER'}}};
+        SERVER={'NUNO'};
+        DATABASE={'projetofinal'};
+        Trust_Connection=yes;
+    """
+    conn = pyodbc.connect(connection_string)
+    print(conn)
+    # Criação de um cursor
+    cursor = conn.cursor()
+
+    # Pedir ao usuário para inserir os valores
+    idempresa = input("Digite o ID da empresa: ")
+    nome = input("Digite o nome da empresa: ")
+
+    # Query SQL para inserir os valores
+    sql_query = "INSERT INTO empresa (idempresa, nome) VALUES (?, ?)"
+
+    # Executar a query
+    cursor.execute(sql_query, (idempresa, nome))
+
+    # Confirmar a transação
+    conn.commit()
+
+    # Fechar a conexão
+    conn.close()
+#verificar se existe alguma coluna com data na tabela
+def validar_se_possui_data_na_tabela(tabela, *args):
+    # Conectar base de dados
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    if [arg for arg in args if arg == "data"]:
+           return True
+    return False
+#Introduzir valores numa tabela em que uma das colunas é a data e introduz automáticmente a data
+def tabela_com_data(tabela, *args):
+    # Conectar base de dados
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    args_sem_data = [arg for arg in args if arg != "data"]
+    data_atual = datetime.now()
+
+    placeholders = ",".join(["?" for _ in args_sem_data])
+    sql_query = f"INSERT INTO {tabela} VALUES ({placeholders}, ?)"
+    cursor.execute(sql_query, args_sem_data + [data_atual])
+
+    # Confirmar a transação e fechar a conexão
+    conn.commit()
+    conn.close()
+#Introduzir valores numa tabela em que nenhuma das colunas possui data
+def tabela_sem_data(tabela, *args):
+    # Conectar base de dados
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    placeholders = ",".join(["?" for _ in args])
+    sql_query = f"INSERT INTO {tabela} VALUES ({placeholders})"
+    cursor.execute(sql_query, args)
+
+    # Confirmar a transação e fechar a conexão
+    conn.commit()
+    conn.close()
+# Verificar se ja existe algum valor igual na tabela
 def validar_strings_de_uma_tabela(valor, tabela, coluna):
     # Conectar base de dados
     conn = conectar_db()
@@ -365,7 +500,6 @@ def validar_strings_de_uma_tabela(valor, tabela, coluna):
         return True
     else:
         return False
-
 def ler_valor_db(coluna_retorno, tabela, coluna_condicao, valor_condicao):
     # Conectar base de dados
     conn = conectar_db()
@@ -384,7 +518,6 @@ def ler_valor_db(coluna_retorno, tabela, coluna_condicao, valor_condicao):
     conn.close()
 
     return valor
-
 def alterar_valor_db(tabela, coluna, novo_valor, condicao_coluna, condicao_valor):
     # Conectar base de dados
     conn = conectar_db()
@@ -399,7 +532,6 @@ def alterar_valor_db(tabela, coluna, novo_valor, condicao_coluna, condicao_valor
     # Confirmar a transação e fechar a conexão
     conn.commit()
     conn.close()
-
 def pontos_do_mapa_por_fracao(id_fracao):
     # Conectar base de dados
     conn = conectar_db()
@@ -417,7 +549,6 @@ def pontos_do_mapa_por_fracao(id_fracao):
     conn.close()
 
     return pontos
-
 def fracoes_por_exploracao(id_exploracao):
     # Conectar base de dados
     conn = conectar_db()
@@ -435,7 +566,6 @@ def fracoes_por_exploracao(id_exploracao):
     conn.close()
 
     return fracoes
-
 def exploracao_por_empresa(id_empresa):
     # Conectar base de dados
     conn = conectar_db()
