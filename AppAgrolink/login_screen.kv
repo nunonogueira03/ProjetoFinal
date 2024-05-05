@@ -1,0 +1,183 @@
+<LoginScreen>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1  # Cor branca
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 7
+        spacing: 10
+        
+
+        # Header com título e botão de voltar
+        BoxLayout:
+            size_hint_y: None
+            height: '60dp'
+            padding: [10, 5, 10, 5]
+            spacing: 10
+
+            Button:
+                text: '<'
+                font_size: '30sp'
+                on_release: app.root.current = 'home'
+                size_hint_x: None
+                width: '50dp'
+                background_color: 1, 1, 1, 0  # Fundo Trasparente
+                color: 1, 1, 1, 1  # Cor do texto verde
+                canvas.before:
+                    Color:
+                        rgba: 0, 0.5, 0, 0.4 # Cor do texto verde
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [20]  # Cantos arredondados
+
+            Label:
+                text: 'Login'
+                size_hint_x: 0.8
+                font_size: '24sp'
+                halign: 'left'
+                valign: 'middle'
+                color: 0, 0.5, 0, 1
+
+        # Campos de entrada centrados
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [20, 50, 20, 130]  # Aumenta padding para centralizar verticalmente
+            spacing: 20
+            halign: 'right'
+
+            BoxLayout:
+                size_hint_y: None
+                height: '40dp'
+                spacing: 35
+                padding: [20, 5, 10, 5]
+                
+                Label:
+                    text: 'Nº de Funcionário:'
+                    size_hint_x: None
+                    font_size: '15sp'
+                    halign: 'left'
+                    valign: 'middle'
+                    color: 0, 0.5, 0, 0.8
+                TextInput:
+                    id: employee_number
+                    multiline: False
+                    font_size: '15sp'
+                    size_hint_y: None
+                    color: 0, 0.5, 0, 1
+                    height: '30dp'  # Ajuste a altura para ser menor
+                    padding: [10, 5, 10, 5]  # Ajuste o padding interno para alinhar o texto
+                    background_color: (1, 1, 1, 0.9)  # Fundo transparente para o TextInput propriamente dito
+                    foreground_color: (0, 0, 0, 1)  # Cor do texto para melhor visibilidade
+                    background_normal: '1, 1, 1, 0.9'  # Garanta que o background padrão seja removido
+                    background_active: '0, 0, 0, 1'  # Garanta que o background ativo também seja removido
+                    hint_text: 'Digite o número'  # Texto de sugestão
+                    hint_text_color: (0, 0, 0, 0.6)  # Cor do texto de sugestão (mais claro)
+                    hint_text_size: '10sp'
+                    text_size: self.size  # Garante que o tamanho do texto corresponda ao tamanho do Spinner
+                    halign: 'left'  # Alinha o texto à esquerda
+                    valign: 'center'  # Centraliza o texto verticalmente
+                    padding_x: 10  # Adiciona um padding horizontal para não sobrepor os cantos arredondados
+
+            BoxLayout:
+                size_hint_y: None
+                height: '40dp'
+                spacing: 5
+                padding: [0, 5, 10, 5]
+
+                Label:
+                    text: 'Password:'
+                    font_size: '15sp'
+                    size_hint_x: None
+                    halign: 'left'
+                    valign: 'middle'
+                    color: 0, 0.5, 0, 1
+
+                TextInput:
+                    id: password
+                    password: True
+                    multiline: False
+                    font_size: '15sp'
+                    size_hint_y: None
+                    color: 0, 0.5, 0, 1
+                    height: '30dp'  # Ajuste a altura para ser menor
+                    padding: [10, 5, 10, 5]  # Ajuste o padding interno para alinhar o texto
+                    background_color: (1, 1, 1, 0.9)  # Fundo transparente para o TextInput propriamente dito
+                    foreground_color: (0, 0, 0, 1)  # Cor do texto para melhor visibilidade
+                    background_normal: '1, 1, 1, 0.9'  # Garanta que o background padrão seja removido
+                    background_active: '0, 0.5, 0, 1'  # Garanta que o background ativo também seja removido
+                    hint_text: 'Digite a password'  # Texto de sugestão
+                    hint_text_color: (0, 0, 0, 0.6)  # Cor do texto de sugestão (mais claro)
+                    hint_text_size: '10sp'
+                ToggleButton:
+                    text: 'Mostrar' if self.state == 'normal' else 'Esconder'
+                    on_release: password.password = not password.password
+                    size_hint_y: None
+                    size_hint_x: None  # Permitir controlar a largura diretamente
+                    width: '80dp'  # Largura reduzida
+                    height: '30dp'
+                    padding: [10, 5, 10, 5]
+                    foreground_color: (0, 0, 0, 1)  # Texto preto para visibilidade
+    
+
+            BoxLayout:
+                size_hint_y: None
+                height: '40dp'
+                spacing: 5
+                padding: [0, 5, 10, 5]
+
+                Label:
+                    text: 'Empresa:'
+                    size_hint_x: None
+                    color: 0, 0.5, 0, 1
+                    font_size: '15sp'
+                    halign: 'left'
+                    valign: 'middle'
+                Spinner:
+                    text: 'Selecione a Empresa'
+                    size_hint_x: 1
+                    values: ['Empresa A', 'Empresa B', 'Empresa C']
+                    font_size: '15sp'
+                    width: '50dp'  # Largura reduzida
+                    size_hint_y: None
+                    size: (10, 55)
+                    background_color: (1, 1, 1, 0)  # Fundo transparente do Spinner propriamente dito
+                    color: (0, 0.5, 0, 1)  # Cor do texto
+                    canvas.before:
+                        Color:
+                            rgba: (0.9, 0.9, 0.9, 1)  # Cor de fundo clara para o retângulo arredondado
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [10]  # Cantos arredondados
+
+                    
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            padding: 40
+            spacing:
+            height: '100dp'  # Ajuste a altura para os botões
+
+            # Botão de conclusão na parte inferior
+            Button:
+                text: 'Concluído'
+                font_size: '16sp'
+                size_hint_y: None
+                height: '50dp'
+                on_release: app.root.current = 'create_account'
+                background_normal: ''  # Desabilitar o fundo padrão
+                background_color: 1, 1, 1, 0  # Fundo transparente
+                color: 1, 1, 1, 1  # Cor do texto branco
+                canvas.before:
+                    Color:
+                        rgba: 0, 0.5, 0, 0.4 # Cor do botao verde
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [30]  # Cantos arredondados

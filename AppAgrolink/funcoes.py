@@ -1,162 +1,229 @@
 import pyodbc
 from datetime import datetime
+import datetime
 import hashlib
 import random
 import string
+from flask import Flask, request, send_file, jsonify
+import json
+import os
+import io
+
+app = Flask(__name__)
 
 #Funcoes Genericas
 #Adiciona os id's as tabelas automaticamente
 def preencher_id_automaticamente(tabela):
-    # Conectar base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
+    #Retorna o próximo ID disponível para uma tabela#
+    caminho_arquivo = f"{tabela}.json"
 
-    # Obter as colunas da tabela
-    cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tabela}'")
-    colunas = cursor.fetchall()
+    if not os.path.exists(caminho_arquivo):
+        return 1
 
-    # Procurar por uma coluna que comece com 'id'
-    for coluna in colunas:
-        if coluna[0].lower().startswith('id'):
-            # Consultar o máximo valor atual da coluna de ID
-            cursor.execute(f"SELECT MAX({coluna[0]}) FROM {tabela}")
-            max_id = cursor.fetchone()[0]
+    # Ler os registros do arquivo JSON
+    with open(caminho_arquivo, 'r') as f:
+        registros = json.load(f)
 
-            # Se não houver nenhum dado na tabela, o máximo valor do ID será None
-            # Neste caso, devolvemos 1 diretamente
-            if max_id is None:
-                return 1
+    if not registros:
+        return 1
 
-            # Incrementar o máximo valor atual em 1 para obter o próximo ID disponível
-            proximo_id = max_id + 1
+    # Encontrar o maior ID
+    coluna_id = next((chave for chave in registros[0].keys() if chave.lower().startswith('id')), None)
+    max_id = max(registro[coluna_id] for registro in registros)
 
-            # Devolver o próximo ID disponível
-            return proximo_id
-
-    # Se nenhuma coluna de ID for encontrada, retornar None
-    return None
+    return max_id + 1
 #Coneccao com a base de dados
 def conectar_db():
     # Conectar base de dados
     connection_string = f"DRIVER={{SQL SERVER}};SERVER=NUNO;DATABASE=projetofinal;Trust_Connection=yes;"
     return pyodbc.connect(connection_string)
+#Ler e converter imagens em binario para poder ser guardado na base de dados
+def armazenar_imagem_no_json(caminho_imagem, relatorio_info):
+    # Adiciona a referência ao caminho da imagem nas informações do relatório
+    relatorio_info['imagem'] = caminho_imagem
 
+    # Caminho para o arquivo JSON
+    caminho_arquivo = 'relatorios.json'
+
+    # Ler os registros existentes
+    if os.path.exists(caminho_arquivo):
+        with open(caminho_arquivo, 'r') as f:
+            registros = json.load(f)
+    else:
+        registros = []
+
+    # Adiciona o novo relatório à lista de registros
+    registros.append(relatorio_info)
+
+    # Salva a lista atualizada de volta no arquivo JSON
+    with open(caminho_arquivo, 'w') as f:
+        json.dump(registros, f, indent=4)
+
+    print("Relatório com imagem armazenado no JSON.")
+
+def obter_imagem_json(idrelatorio):
+    # Caminho para o arquivo JSON
+    caminho_arquivo = 'relatorios.json'
+
+    if not os.path.exists(caminho_arquivo):
+        return None
+
+    # Ler o conteúdo do arquivo JSON
+    with open(caminho_arquivo, 'r') as f:
+        registros = json.load(f)
+
+    # Procurar o relatório pelo ID
+    for registro in registros:
+        if registro.get('idrelatorio') == idrelatorio:
+            return registro.get('imagem')
+
+    return None
+
+@app.route('/imagem/<int:idrelatorio>', methods=['GET'])
+def devolver_imagem(idrelatorio):
+    # Obter o caminho da imagem a partir do JSON
+    caminho_imagem = obter_imagem_json(idrelatorio)
+
+    if not caminho_imagem:
+        return "Imagem não encontrada", 404
+
+    # Enviar a imagem diretamente na resposta
+    with open(caminho_imagem, 'rb') as f:
+        dados_imagem = f.read()
+
+    return send_file(io.BytesIO(dados_imagem), mimetype='image/jpeg')
+#Validar se os valores já exitem...Utilizado no adicinar empresa, para o número de contribuinte...
+def validar_unicidade(valor, chave, registros):
+    #Verifica se um valor específico é único em uma lista de registros
+    for registro in registros:
+        if str(registro[chave]).lower() == str(valor).lower():
+            return False
+    return True
 #Funcoes Empresa
 #Adicionar tabela empresa
 def adicionar_empresa(nome, numerocontribuinte, morada, contacto):
-    # Conectar à base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
+    caminho_arquivo = "empresa.json"
 
-    # Verifica se o número de contribuinte já existe
-    if not validar_strings_de_uma_tabela(numerocontribuinte, 'empresa', 'numerocontribuinte'):
-        conn.close()
+    if os.path.exists(caminho_arquivo):
+        with open(caminho_arquivo, 'r') as f:
+            registros = json.load(f)
+    else:
+        registros = []
+
+    # Validar a unicidade de `numerocontribuinte` e `contacto`
+    if not validar_unicidade(numerocontribuinte, 'numerocontribuinte', registros):
         return False, "Número de contribuinte já existe, por favor, insira um valor diferente."
-
-    # Verifica se o contacto já existe
-    if not validar_strings_de_uma_tabela(contacto, 'empresa', 'contacto'):
-        conn.close()
+    
+    if not validar_unicidade(contacto, 'contacto', registros):
         return False, "Contacto já existe, por favor, insira um valor diferente."
 
     # Obter ID automático para a nova empresa
-    idempresa = preencher_id_automaticamente('empresa')
+    idempresa = preencher_id_automaticamente("empresa")
 
-    # Preparar a consulta SQL para inserir os dados da empresa
-    query = """
-    INSERT INTO empresa (idempresa, nome, numerocontribuinte, morada, contacto)
-    VALUES (?, ?, ?, ?, ?)
-    """
-    values = (idempresa, nome, numerocontribuinte, morada, contacto)
+    # Adicionar o novo registro
+    nova_empresa = {
+        'idempresa': idempresa,
+        'nome': nome,
+        'numerocontribuinte': numerocontribuinte,
+        'morada': morada,
+        'contacto': contacto
+    }
+    registros.append(nova_empresa)
 
-    # Executar a consulta
-    try:
-        cursor.execute(query, values)
-        conn.commit()
-        print("Empresa adicionada com sucesso!")
-        return True, "Empresa adicionada com sucesso!"
-    except Exception as e:
-        print(f"Erro ao adicionar a empresa: {e}")
-        return False, f"Erro ao adicionar a empresa: {e}"
-    finally:
-        conn.close()
+    # Salvar a lista de registros de volta no arquivo JSON
+    with open(caminho_arquivo, 'w') as f:
+        json.dump(registros, f, indent=4)
+
+    return True, "Empresa adicionada com sucesso!"
 
 #Funcoes Utilizador
 #Adicionar tabela utilizador 
 def adicionar_utilizador(nome, password, numfuncionario, gmail, nome_empresa):
-    # Conectar à base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
-
-    # Validar o formato do email
+    # Validar o formato do e-mail
     if not validar_email(gmail):
-        conn.close()
-        return False, "Email inválido."
+        return False, "E-mail inválido."
 
-    # Verificar se o número do funcionário e o email já existem
-    if not validar_strings_de_uma_tabela(numfuncionario, 'utilizador', 'numfuncionario'):
-        conn.close()
+    caminho_utilizadores = "utilizadores.json"
+    if os.path.exists(caminho_utilizadores):
+        with open(caminho_utilizadores, 'r') as f:
+            registros = json.load(f)
+    else:
+        registros = []
+
+    # Verificar unicidade de `numfuncionario` e `gmail`
+    if not validar_unicidade(numfuncionario, 'numfuncionario', registros):
         return False, "Número de funcionário já existe."
-    if not validar_strings_de_uma_tabela(gmail, 'utilizador', 'gmail'):
-        conn.close()
-        return False, "Email já existe."
+    if not validar_unicidade(gmail, 'gmail', registros):
+        return False, "E-mail já existe."
 
-    # Obter ID automático para o novo utilizador
+    # Preencher ID automaticamente para o novo usuário
     id_utilizador = preencher_id_automaticamente('utilizador')
 
-    # Verificar se é o primeiro utilizador para definir o tipo de utilizador
-    cursor.execute("SELECT COUNT(*) FROM utilizador")
-    count = cursor.fetchone()[0]
-    idtipoutilizador = 1 if count == 0 else 0
+    # Verificar o tipo de utilizador
+    idtipoutilizador = 1 if not registros else 0
 
-    # Gerar um novo sal e encriptar a senha
+    # Gerar um novo sal e criptografar a senha
     sal = gerar_sal()
     encrypted_password = criptografar_password(sal + password)
 
-    try:
-        cursor.execute("""
-            INSERT INTO utilizador (nome, id_utilizador, password, numfuncionario, gmail, sal, idtipoutilizador)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (nome, id_utilizador, encrypted_password, numfuncionario, gmail, sal, idtipoutilizador))
-        conn.commit()
-    except Exception as e:
-        conn.close()
-        return False, f"Erro ao adicionar o utilizador: {e}"
+    novo_utilizador = {
+        'id_utilizador': id_utilizador,
+        'nome': nome,
+        'password': encrypted_password,
+        'numfuncionario': numfuncionario,
+        'gmail': gmail,
+        'sal': sal,
+        'idtipoutilizador': idtipoutilizador
+    }
 
-    try:
-        cursor.execute("SELECT idempresa FROM empresa WHERE nome = ?", (nome_empresa,))
-        empresa_info = cursor.fetchone()
-        if empresa_info is None:
-            conn.close()
-            return False, f"Empresa '{nome_empresa}' não encontrada."
-        idempresa = empresa_info[0]
-    except Exception as e:
-        conn.close()
-        return False, f"Erro ao buscar o ID da empresa: {e}"
+    registros.append(novo_utilizador)
 
-    try:
-        cursor.execute("""
-            INSERT INTO contrato (id_utilizador, idempresa)
-            VALUES (?, ?)
-        """, (id_utilizador, idempresa))
-        conn.commit()
-    except Exception as e:
-        conn.close()
-        return False, f"Erro ao adicionar o contrato: {e}"
+    # Salvar a lista de registros de volta no arquivo JSON
+    with open(caminho_utilizadores, 'w') as f:
+        json.dump(registros, f, indent=4)
 
-    conn.close()
+    # Associar o utilizador a uma empresa
+    caminho_empresas = 'empresa.json'
+    if os.path.exists(caminho_empresas):
+        with open(caminho_empresas, 'r') as fe:
+            empresas = json.load(fe)
+    else:
+        return False, f"Empresa '{nome_empresa}' não encontrada."
+
+    idempresa = next((emp['idempresa'] for emp in empresas if emp['nome'].lower() == nome_empresa.lower()), None)
+
+    if not idempresa:
+        return False, f"Empresa '{nome_empresa}' não encontrada."
+
+    caminho_contratos = 'contrato.json'
+    if os.path.exists(caminho_contratos):
+        with open(caminho_contratos, 'r') as fc:
+            contratos = json.load(fc)
+    else:
+        contratos = []
+
+    novo_contrato = {
+        'id_utilizador': id_utilizador,
+        'idempresa': idempresa
+    }
+
+    contratos.append(novo_contrato)
+
+    with open(caminho_contratos, 'w') as fcw:
+        json.dump(contratos, fcw, indent=4)
+
     return True, "Utilizador e contrato adicionados com sucesso!"
+
 #Validar se o email tem os caracteres caracteristicos
 def validar_email(email):
-    # Verificar se o email contém pelo menos um '@' e pelo menos um '.'
-    if '@' in email and '.' in email:
-        return True
-    else:
-        return False
+    #Verifica se o e-mail contém um '@' e um '.'
+    return '@' in email and '.' in email
 #Função para gerar uma string aleatória de 20 caracteres (sal)
 def gerar_sal():
+    #Gera uma string aleatória de 20 caracteres
     caracteres = string.ascii_letters + string.digits
-    sal = ''.join(random.choice(caracteres) for i in range(20))
-    return sal
+    return ''.join(random.choice(caracteres) for i in range(20))
+
 #Adiciona o sal a password introduzida e codifica
 def criar_e_armazenar_password(idutilizador, password):
     # Conectar base de dados
@@ -176,32 +243,35 @@ def criar_e_armazenar_password(idutilizador, password):
     conn.close()
 #Funcao de criptografar a string password
 def criptografar_password(password):
-    # Codificar a palavra em bytes
-    password_bytes = password.encode('utf-8')
-
-    # Criar um objeto de hash SHA-256
+    #Criptografa uma senha usando SHA-256.
     sha256 = hashlib.sha256()
+    sha256.update(password.encode('utf-8'))
+    return sha256.hexdigest()
 
-    # Atualizar o objeto de hash com os bytes da palavra
-    sha256.update(password_bytes)
-
-    # Gerar o hash da palavra
-    hash_password = sha256.hexdigest()
-
-    return hash_password
 #Função para validar senha no login
 def validar_password(idutilizador, input_password):
-    # Conectar base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
+    caminho_utilizadores = "utilizadores.json"
 
-    # Obter sal e senha criptografada da base de dados
-    cursor.execute("SELECT sal, password FROM utilizador WHERE id_utilizador = ?", (idutilizador,))
-    sal, stored_password = cursor.fetchone()
-    # Criptografar senha de input com sal
-    input_password_criptografada = criptografar_password(sal + input_password)
-    conn.close()
-    return input_password_criptografada == stored_password  
+    if not os.path.exists(caminho_utilizadores):
+        print("Arquivo de utilizadores não encontrado.")
+        return False, "Arquivo de utilizadores não encontrado."
+
+    with open(caminho_utilizadores, 'r') as f:
+        registros = json.load(f)
+
+    # Localizar o utilizador correspondente
+    for registro in registros:
+        if registro['id_utilizador'] == idutilizador:
+            # Obter o sal e a senha armazenada
+            sal = registro['sal']
+            stored_password = registro['password']
+
+            # Criptografar a senha de entrada
+            input_password_criptografada = criptografar_password(sal + input_password)
+
+            return input_password_criptografada == stored_password, "Senha válida" if input_password_criptografada == stored_password else "Senha inválida"
+
+    return False, "Utilizador não encontrado."
 #Funcao de login
 def login(nome_empresa, numfuncionario, input_password):
     # Conectar à base de dados
@@ -248,159 +318,369 @@ def login(nome_empresa, numfuncionario, input_password):
 #Funcoes de Exploracao
 # Adicionar nova uma exploração a uma empresa
 def adicionar_exploracao(nome_exploracao, idempresa):
-    # Conectar à base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
+    caminho_arquivo = "exploracao.json"
 
-    try:
-        # Gerar ID automático para a nova exploração
-        idexploracao = preencher_id_automaticamente('exploracao')
-        # Inserir a exploração
-        cursor.execute("INSERT INTO exploracao (idexploracao, nome, idempresa) VALUES (?, ?, ?)", (idexploracao, nome_exploracao, idempresa))
-        conn.commit()
-        print("Exploração adicionada com sucesso.")
-        return idexploracao  # Retorna o ID da exploração para uso subsequente
-    except Exception as e:
-        print(f"Erro ao adicionar exploração: {e}")
-        conn.rollback()
-        return None
-    finally:
-        conn.close()
+    if os.path.exists(caminho_arquivo):
+        with open(caminho_arquivo, 'r') as f:
+            registros = json.load(f)
+    else:
+        registros = []
+
+    # Preencher ID automaticamente para a nova exploração
+    idexploracao = preencher_id_automaticamente("exploracao")
+
+    # Adicionar o novo registro
+    nova_exploracao = {
+        'idexploracao': idexploracao,
+        'nome': nome_exploracao,
+        'idempresa': idempresa
+    }
+    registros.append(nova_exploracao)
+
+    # Salvar a lista de registros de volta no arquivo JSON
+    with open(caminho_arquivo, 'w') as fw:
+        json.dump(registros, fw, indent=4)
+
+    print("Exploração adicionada com sucesso.")
+    return idexploracao
 # Adicionar fracoes e pontos a uma exploracao
 def adicionar_fracoes_pontos(idexploracao, fracoes, pontos):
-    # Conectar à base de dados
-    conn = conectar_db()
-    cursor = conn.cursor()
+    caminho_pontos = "pontomapa.json"
+    caminho_fracoes = "fracao.json"
+    caminho_tem = "tem.json"
 
+    # Ler os arquivos JSON existentes
+    if os.path.exists(caminho_pontos):
+        with open(caminho_pontos, 'r') as fp:
+            registros_pontos = json.load(fp)
+    else:
+        registros_pontos = []
+
+    if os.path.exists(caminho_fracoes):
+        with open(caminho_fracoes, 'r') as ff:
+            registros_fracoes = json.load(ff)
+    else:
+        registros_fracoes = []
+
+    if os.path.exists(caminho_tem):
+        with open(caminho_tem, 'r') as ft:
+            registros_tem = json.load(ft)
+    else:
+        registros_tem = []
+
+    # Inserir pontos no mapa
+    pontos_ids = {}
+    for i, ponto in enumerate(pontos):
+        idponto = preencher_id_automaticamente('pontomapa')
+        novo_ponto = {
+            'idponto': idponto,
+            'latitude': ponto['latitude'],
+            'longitude': ponto['longitude'],
+            'vertice': 1  # Todos os pontos são considerados vértices por padrão
+        }
+        registros_pontos.append(novo_ponto)
+        pontos_ids[i] = idponto
+
+    # Inserir frações e associar pontos
+    for fra in fracoes:
+        if len(fra['indices_pontos']) < 3:
+            print(f"Erro: A fração '{fra['nome']}' precisa de pelo menos 3 pontos.")
+            return False
+
+        idfracao = preencher_id_automaticamente('fracao')
+        nova_fracao = {
+            'idfracao': idfracao,
+            'nome': fra['nome'],
+            'descricao': fra['descricao'],
+            'idexploracao': idexploracao
+        }
+        registros_fracoes.append(nova_fracao)
+
+        # Associar pontos à fração
+        for indice_ponto in fra['indices_pontos']:
+            idponto = pontos_ids[indice_ponto]
+            novo_tem = {
+                'idponto': idponto,
+                'idfracao': idfracao
+            }
+            registros_tem.append(novo_tem)
+
+    # Salvar os arquivos atualizados
+    with open(caminho_pontos, 'w') as fpw:
+        json.dump(registros_pontos, fpw, indent=4)
+
+    with open(caminho_fracoes, 'w') as ffw:
+        json.dump(registros_fracoes, ffw, indent=4)
+
+    with open(caminho_tem, 'w') as ftw:
+        json.dump(registros_tem, ftw, indent=4)
+
+    print("Frações e pontos adicionados com sucesso.")
+    return True
+#Função que permitirá desenhar a exploração no mapa com todas as frações
+def recuperar_fracoes_e_pontos(idexploracao):
+    # Caminho para os arquivos JSON
+    caminho_fracoes = "fracao.json"
+    caminho_pontos = "pontomapa.json"
+    caminho_tem = "tem.json"
+
+    # Carregar dados dos arquivos JSON
     try:
-        conn.autocommit = False
-        
-        # Inserir pontos no mapa com IDs automáticos
-        pontos_ids = {}
-        for i, ponto in enumerate(pontos):
-            idponto = preencher_id_automaticamente('pontomapa')
-            cursor.execute("INSERT INTO pontomapa (idponto, latitude, longitude, vertice) VALUES (?, ?, ?, 1)", (idponto, ponto['latitude'], ponto['longitude']))
-            pontos_ids[i] = idponto
+        with open(caminho_fracoes, 'r') as ff:
+            fracoes = json.load(ff)
+        with open(caminho_pontos, 'r') as fp:
+            pontos = json.load(fp)
+        with open(caminho_tem, 'r') as ft:
+            tem = json.load(ft)
+    except FileNotFoundError as e:
+        print(f"Erro ao carregar arquivos JSON: {e}")
+        return None
 
-        # Inserir frações e associar pontos
-        for fra in fracoes:
-            if len(fra['indices_pontos']) < 3:
-                # Se uma fração tem menos de 3 pontos, não continuar com a inserção
-                print(f"Erro: A fração '{fra['nome']}' deve ter pelo menos 3 pontos para formar um polígono.")
-                conn.rollback()
-                return False
+    # Filtrar frações pela exploração
+    fracoes_exploracao = [fra for fra in fracoes if fra['idexploracao'] == idexploracao]
 
-            idfracao = preencher_id_automaticamente('fracao')
-            cursor.execute("INSERT INTO fracao (idfracao, nome, descricao, idexploracao) VALUES (?, ?, ?, ?)", (idfracao, fra['nome'], fra['descricao'], idexploracao))
-            
-            # Associar pontos da fração
-            for indice_ponto in fra['indices_pontos']:
-                idponto = pontos_ids[indice_ponto]
-                cursor.execute("INSERT INTO tem (idponto, idfracao) VALUES (?, ?)", (idponto, idfracao))
-        
-        conn.commit()
-        print("Frações e pontos adicionados com sucesso.")
-        return True
-    except Exception as e:
-        print(f"Erro ao adicionar frações e pontos: {e}")
-        conn.rollback()
-        return False
-    finally:
-        conn.close()
+    # Preparar dados para retorno
+    resultado = []
+    for fra in fracoes_exploracao:
+        # Encontrar todos os pontos associados à fração
+        pontos_fracao = [p for p in pontos if any(t['idponto'] == p['idponto'] and t['idfracao'] == fra['idfracao'] for t in tem)]
+        resultado.append({
+            'idfracao': fra['idfracao'],
+            'nome': fra['nome'],
+            'pontos': pontos_fracao
+        })
+
+    return resultado
 #Função altera 4 tabelas sensor, medida, ponto mapa, tem
 def adicionar_sensor(nome_sensor, unidade, latitude, longitude, idfracao):
-    conn = conectar_db()
-    cursor = conn.cursor()
+    caminho_pontos = "pontomapa.json"
+    caminho_sensores = "sensor.json"
+    caminho_tem = "tem.json"
+    caminho_medidas = "medida.json"
 
-    try:
-        conn.autocommit = False
+    # Ler os arquivos existentes
+    if os.path.exists(caminho_pontos):
+        with open(caminho_pontos, 'r') as fp:
+            registros_pontos = json.load(fp)
+    else:
+        registros_pontos = []
 
-        # Adicionar ponto no mapa com vertice padrão como zero
-        idponto = preencher_id_automaticamente('pontomapa')
-        cursor.execute("INSERT INTO pontomapa (idponto, latitude, longitude, vertice) VALUES (?, ?, ?, 0)", (idponto, latitude, longitude))
+    if os.path.exists(caminho_sensores):
+        with open(caminho_sensores, 'r') as fs:
+            registros_sensores = json.load(fs)
+    else:
+        registros_sensores = []
 
-        # Adicionar sensor associado a esse ponto
-        idsensor = preencher_id_automaticamente('sensor')
-        cursor.execute("INSERT INTO sensor (idsensor, nome, unidade, idponto) VALUES (?, ?, ?, ?)", (idsensor, nome_sensor, unidade, idponto))
+    if os.path.exists(caminho_tem):
+        with open(caminho_tem, 'r') as ft:
+            registros_tem = json.load(ft)
+    else:
+        registros_tem = []
 
-        # Associar o ponto de mapa à fração na tabela 'tem'
-        cursor.execute("INSERT INTO tem (idponto, idfracao) VALUES (?, ?)", (idponto, idfracao))
+    if os.path.exists(caminho_medidas):
+        with open(caminho_medidas, 'r') as fm:
+            registros_medidas = json.load(fm)
+    else:
+        registros_medidas = []
 
-        # Adicionar uma medida inicial com valor zero e data atual
-        idmedida = preencher_id_automaticamente('medida')
-        data_atual = datetime.datetime.now().strftime('%Y-%m-%d')  # Formatação ISO da data
-        cursor.execute("INSERT INTO medida (idmedida, data, valor, idsensor) VALUES (?, ?, ?, ?)", (idmedida, data_atual, 0, idsensor))
+    # Adicionar ponto no mapa
+    idponto = preencher_id_automaticamente('pontomapa')
+    novo_ponto = {
+        'idponto': idponto,
+        'latitude': latitude,
+        'longitude': longitude,
+        'vertice': 0
+    }
+    registros_pontos.append(novo_ponto)
 
-        conn.commit()
-        print("Sensor adicionado com sucesso com dados de medida zero, data atual e associado à fração.")
-        return True
-    except Exception as e:
-        print(f"Erro ao adicionar o sensor: {e}")
-        conn.rollback()
-        return False
-    finally:
-        conn.close()
+    # Adicionar sensor associado a esse ponto
+    idsensor = preencher_id_automaticamente('sensor')
+    novo_sensor = {
+        'idsensor': idsensor,
+        'nome': nome_sensor,
+        'unidade': unidade,
+        'idponto': idponto
+    }
+    registros_sensores.append(novo_sensor)
+
+    # Associar o ponto de mapa à fração
+    novo_tem = {
+        'idponto': idponto,
+        'idfracao': idfracao
+    }
+    registros_tem.append(novo_tem)
+
+    # Adicionar uma medida inicial
+    idmedida = preencher_id_automaticamente('medida')
+    data_atual = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    nova_medida = {
+        'idmedida': idmedida,
+        'data': data_atual,
+        'valor': 0,
+        'idsensor': idsensor
+    }
+    registros_medidas.append(nova_medida)
+
+    # Salvar os arquivos atualizados
+    with open(caminho_pontos, 'w') as fpw:
+        json.dump(registros_pontos, fpw, indent=4)
+
+    with open(caminho_sensores, 'w') as fsw:
+        json.dump(registros_sensores, fsw, indent=4)
+
+    with open(caminho_tem, 'w') as ftw:
+        json.dump(registros_tem, ftw, indent=4)
+
+    with open(caminho_medidas, 'w') as fmw:
+        json.dump(registros_medidas, fmw, indent=4)
+
+    print("Sensor e informações associadas adicionados com sucesso.")
+    return True
 #Função que atualiza o valor do sensor e a data
 def atualizar_medida_sensor(idsensor, novo_valor):
-    conn = conectar_db()
-    cursor = conn.cursor()
+    caminho_medidas = "medida.json"
 
-    try:
-        # Obter o ID da medida mais recente para o sensor especificado
-        cursor.execute("SELECT idmedida FROM medida WHERE idsensor = ? ORDER BY data DESC LIMIT 1", (idsensor,))
-        resultado = cursor.fetchone()
-        if not resultado:
-            print("Nenhuma medida encontrada para o sensor especificado.")
-            return False
-
-        idmedida = resultado[0]
-        data_atual = datetime.datetime.now().strftime('%Y-%m-%d')  # Formatação ISO da data atual
-
-        # Atualizar a medida com o novo valor e data atual
-        cursor.execute("UPDATE medida SET valor = ?, data = ? WHERE idmedida = ?", (novo_valor, data_atual, idmedida))
-        conn.commit()
-        print("Medida do sensor atualizada com sucesso.")
-        return True
-    except Exception as e:
-        print(f"Erro ao atualizar a medida do sensor: {e}")
-        conn.rollback()
+    if not os.path.exists(caminho_medidas):
+        print("Arquivo de medidas não encontrado.")
         return False
-    finally:
-        conn.close()
+
+    # Ler as medidas existentes
+    with open(caminho_medidas, 'r') as f:
+        registros_medidas = json.load(f)
+
+    # Encontrar a medida mais recente para o sensor especificado
+    medidas_sensor = [medida for medida in registros_medidas if medida['idsensor'] == idsensor]
+    if not medidas_sensor:
+        print("Nenhuma medida encontrada para o sensor especificado.")
+        return False
+
+    # Ordenar por data (do mais recente para o mais antigo)
+    medidas_sensor.sort(key=lambda m: datetime.datetime.strptime(m['data'], '%Y-%m-%d'), reverse=True)
+    idmedida = medidas_sensor[0]['idmedida']
+
+    # Atualizar o registro
+    data_atual = datetime.datetime.now().strftime('%Y-%m-%d')
+    for medida in registros_medidas:
+        if medida['idmedida'] == idmedida:
+            medida['valor'] = novo_valor
+            medida['data'] = data_atual
+            break
+
+    # Salvar o arquivo atualizado
+    with open(caminho_medidas, 'w') as fw:
+        json.dump(registros_medidas, fw, indent=4)
+
+    print("Medida do sensor atualizada com sucesso.")
+    return True
 #Funcao para criar tabela relatorio
-def criar_relatorio(nome, descricao, imagem, idfracao, nome_estado):
-    conn = conectar_db()
-    cursor = conn.cursor()
+def criar_relatorio(nome, descricao, caminho_imagem, idfracao):
+    caminho_relatorios = "registorelatorio.json"
+    caminho_estar = "estar.json"
+    caminho_fracao = "fracao.json"
 
+    # Ler os registros existentes
+    registros_relatorios, registros_estar = [], []
     try:
-        conn.autocommit = False
+        with open(caminho_relatorios, 'r') as fr:
+            registros_relatorios = json.load(fr)
+        with open(caminho_estar, 'r') as fe:
+            registros_estar = json.load(fe)
+    except FileNotFoundError:
+        print("Alguns arquivos JSON não foram encontrados e serão criados.")
 
-        # Adicionar o relatório
-        idrelatorio = preencher_id_automaticamente('registorelatorio')
-        cursor.execute("INSERT INTO registorelatorio (idrelatorio, nome, descricao, imagem, idfracao) VALUES (?, ?, ?, ?, ?)",
-                       (idrelatorio, nome, descricao, imagem, idfracao))
-
-        # Obter o ID do estado com base no nome fornecido
-        cursor.execute("SELECT idestador FROM estado WHERE nome = ?", (nome_estado,))
-        resultado = cursor.fetchone()
-        if not resultado:
-            print("Estado não encontrado.")
-            conn.rollback()
-            return False
-        idestador = resultado[0]
-
-        # Associar o relatório ao estado na tabela 'estar'
-        cursor.execute("INSERT INTO estar (idrelatorio, idestador) VALUES (?, ?)", (idrelatorio, idestador))
-
-        conn.commit()
-        print("Relatório criado com sucesso e estado associado.")
-        return True
-    except Exception as e:
-        print(f"Erro ao criar o relatório: {e}")
-        conn.rollback()
+    # Verificar se a fração fornecida existe
+    registros_fracao = []
+    try:
+        with open(caminho_fracao, 'r') as ff:
+            registros_fracao = json.load(ff)
+    except FileNotFoundError:
+        print("Erro: O arquivo de frações não existe.")
         return False
-    finally:
-        conn.close()  
+
+    if not any(f['idfracao'] == idfracao for f in registros_fracao):
+        print("Erro: A fração fornecida não existe.")
+        return False
+
+    # Converter a imagem para dados armazenáveis
+    dados_imagem = armazenar_imagem_no_json(caminho_imagem)
+
+    # Obter ID automático para o novo relatório
+    idrelatorio = preencher_id_automaticamente('registorelatorio')
+
+    # Adicionar o novo relatório
+    novo_relatorio = {
+        'idrelatorio': idrelatorio,
+        'nome': nome,
+        'descricao': descricao,
+        'imagem': dados_imagem,
+        'idfracao': idfracao
+    }
+    registros_relatorios.append(novo_relatorio)
+
+    # Associar o relatório ao estado inicial
+    data_atual = datetime.datetime.now().strftime('%Y-%m-%d')
+    novo_estar = {
+        'idrelatorio': idrelatorio,
+        'idestado': 0,
+        'data': data_atual
+    }
+    registros_estar.append(novo_estar)
+
+    # Salvar os arquivos atualizados
+    with open(caminho_relatorios, 'w') as frw:
+        json.dump(registros_relatorios, frw, indent=4)
+    with open(caminho_estar, 'w') as few:
+        json.dump(registros_estar, few, indent=4)
+
+    print("Relatório criado com sucesso.")
+    return True
+#Cria as tarefas associadas ao relatorio
+def criar_tarefa_associada_relatorio(nome_tarefa, descricao, idrelatorio):
+    caminho_tarefa = "tarefa.json"
+    caminho_estat = "estat.json"
+    caminho_fornece = "fornece.json"
+
+    # Carregar ou inicializar os dados JSON
+    tarefas, estados, fornecimentos = [], [], []
+    for caminho, lista in [(caminho_tarefa, tarefas), (caminho_estat, estados), (caminho_fornece, fornecimentos)]:
+        if os.path.exists(caminho):
+            with open(caminho, 'r') as file:
+                lista.extend(json.load(file))
+
+    # Adicionar nova tarefa
+    idtarefa = preencher_id_automaticamente('tarefa')
+    nova_tarefa = {
+        'idtarefa': idtarefa,
+        'nome': nome_tarefa,
+        'descricao': descricao
+    }
+    tarefas.append(nova_tarefa)
+
+    # Adicionar estado inicial da tarefa
+    idestat = preencher_id_automaticamente('estat')
+    novo_estat = {
+        'data': datetime.datetime.now().strftime('%Y-%m-%d'),
+        'idestat': idestat,
+        'idtarefa': idtarefa
+    }
+    estados.append(novo_estat)
+
+    # Associar tarefa ao relatório
+    novo_fornece = {
+        'idrelatorio': idrelatorio,
+        'idtarefa': idtarefa
+    }
+    fornecimentos.append(novo_fornece)
+
+    # Salvar dados atualizados
+    for caminho, dados in [(caminho_tarefa, tarefas), (caminho_estat, estados), (caminho_fornece, fornecimentos)]:
+        with open(caminho, 'w') as file:
+            json.dump(dados, file, indent=4)
+
+    print(f"Tarefa '{nome_tarefa}' criada e associada ao relatório ID {idrelatorio} com estado inicializado.")
+    return True
+
 
 #Outras
 #Testes
@@ -450,7 +730,7 @@ def validar_se_possui_data_na_tabela(tabela, *args):
     if [arg for arg in args if arg == "data"]:
            return True
     return False
-#Introduzir valores numa tabela em que uma das colunas é a data e introduz automáticmente a data
+#Introduzir valores numa tabela em que uma das colunas é a data e introduz automáticamente a data
 def tabela_com_data(tabela, *args):
     # Conectar base de dados
     conn = conectar_db()
@@ -583,3 +863,6 @@ def exploracao_por_empresa(id_empresa):
     conn.close()
 
     return exploracao
+
+if __name__ == '__main__':
+    app.run(debug=True)
