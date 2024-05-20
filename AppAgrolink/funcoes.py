@@ -8,6 +8,7 @@ from flask import Flask, request, send_file, jsonify
 import json
 import os
 import io
+import sqlite3
 
 app = Flask(__name__)
 
@@ -60,7 +61,7 @@ def armazenar_imagem_no_json(caminho_imagem, relatorio_info):
         json.dump(registros, f, indent=4)
 
     print("Relatório com imagem armazenado no JSON.")
-
+#Retirar uma imagem guardada
 def obter_imagem_json(idrelatorio):
     # Caminho para o arquivo JSON
     caminho_arquivo = 'relatorios.json'
@@ -99,6 +100,27 @@ def validar_unicidade(valor, chave, registros):
         if str(registro[chave]).lower() == str(valor).lower():
             return False
     return True
+#Reitirar todos os nomes das empresas que estiverem na tabela empresa
+def nome_empresas():
+    # Conectar ao banco de dados
+    conn = conectar_db()
+    cursor = conn.cursor()
+    
+    # Consultar todos os nomes de empresas na tabela 'empresa'
+    cursor.execute("SELECT nome FROM empresa")
+    empresas = cursor.fetchall()  # Isso retorna uma lista de tuplas
+    
+    # Fechar a conexão com o banco de dados
+    conn.close()
+
+    # Converter a lista de tuplas em uma lista de strings
+    empresas = [nome[0] for nome in empresas]
+
+    # Converter a lista em JSON
+    empresas_json = json.dumps(empresas)
+    
+    return empresas_json
+
 #Funcoes Empresa
 #Adicionar tabela empresa
 def adicionar_empresa(nome, numerocontribuinte, morada, contacto):

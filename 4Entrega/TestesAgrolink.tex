@@ -1,0 +1,122 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+% Configurações da Capa
+\title{AgroLink - Testes}
+\author{}
+\date{Maio 2024}
+
+\begin{document}
+	
+	% Capa
+	\begin{titlepage}
+		\centering
+		{\scshape\LARGE Coimbra Business School \par}
+		\vspace{1cm}
+		{\scshape\Large Informática de Gestão - 3º Ano \par}
+		\vspace{1.5cm}
+		{\huge\bfseries AgroLink - Testes \par}
+		\vspace{2cm}
+		\includegraphics[width=0.3\textwidth]{AGROLINK.png} % Imagem com tamanho definido
+		\vspace{3cm}
+		\large
+		\\Nuno Nogueira (a2021156399)\\
+		Paulo Gonçalves (a2020130672)\\
+		Tiago Moita (a2021142357)
+		\vfill
+		Orientador: Professor Paulo Soares \par
+		\vfill
+		{\large Maio 2024 \par}
+	\end{titlepage}
+	
+	% Resumo
+	\newpage
+	\chapter*{Resumo}
+	
+	Este documento apresenta uma série de testes realizados até ao momento: testes unitários, teste de integração, testes funcionais e de usabilidade. Com estes testes será possível viabilizar a performance, a integridade dos dados e o funcionamento geral de toda a aplicação. Em termos de performance foram conduzidos testes para avaliar a velocidade de resposta e a eficiência do sistema sob diferentes condições de carga. Estes testes são cruciais para garantir que a aplicação suporta um grande número de utilizadores simultâneos sem comprometer a sua usabilidade.
+	
+	Em termos de performance foram conduzidos testes para avaliar a velocidade de resposta e a eficiência do sistema sob diferentes condições de carga. Estes testes são cruciais para garantir que a aplicação suporta um grande número de utilizadores simultâneos sem comprometer a sua usabilidade.
+	
+	No que diz respeito à integridade dos dados, foram efetuados testes para assegurar que as operações de leitura e escrita na base de dados são realizadas de forma correta e segura. Estes testes garantem que os dados mantidos pela aplicação são consistentes e que não ocorrem perdas ou destruição de dados durante as operações.
+	
+	Além disso, o documento inclui testes de funcionamento aplicacional, que verificam se todas as funcionalidades da aplicação estão a operar conforme o esperado. Estes testes abrangem a navegação entre diferentes ecrãs, a interação com os elementos da interface do utilizador e a execução das principais funcionalidades do sistema.
+	
+	O objetivo deste documento é fornecer uma visão dos testes realizados, demonstrando a robustez e a fiabilidade da aplicação.
+		
+	Toda a documentação do trabalho desenvolvido até à data está disponibilizada na plataforma GitHub em \href{https://github.com/nunonogueira03/ProjetoFinal}{ProjetoFinal}
+	, sendo indicada toda a informação relevante.
+	
+	% Sumário
+	\newpage
+	\tableofcontents	
+	
+	\chapter{Testes}
+	\section{Unitários}
+	Os testes unitários constituem-se como uma parte fundamental do processo de desenvolvimento da aplicação AgroLink. Na realização dos primeiros testes, também a escrita do código é analisada e reescrita, como suporte de apoio a esta ação e à realização de testes seguintes. Estes testes visam garantir que cada unidade individual do código funcione corretamente de forma isolada. Na aplicação AgroLink estes testes foram realizados para verificar a funcionalidade das várias componentes da aplicação, assim como para verificar as funções de adição de utilizadores da empresa, as frações e qualquer função de leitura ou escrita na base de dados, relativamente à comunicação dos vários módulos de código.
+	
+	Assim, o principal objetivo dos testes unitários na aplicação AgroLink é assegurar que cada função e método opere conforme o esperado, incluindo a verificação das operações de leitura e escrita na base de dados, a correta execução de lógicas da exploração e a validação dos dados inseridos pelos utilizadores nos locais de input.
+	
+	Na implementação dos testes unitários utilizou-se a framework unittest do Python, que permitiu criar testes automáticos para as diversas funções da aplicação. Seguidamente detalham-se alguns dos principais testes realizados: 
+	
+			\begin{itemize}
+				\item Teste das Funções de Gestão de utilizadores e exploração
+				\begin{itemize}
+					\item Uma das funcionalidades principais da AgroLink é a gestão de exploração. Implementamos testes unitários para garantir que funções como \texttt{adicionar\_exploracao}, \texttt{adicionar\_fracao\_pontos}, e \texttt{adicionar\_utilizador}, funcionam corretamente.
+				\end{itemize}
+				
+				\item Teste de Validação de Dados
+				\begin{itemize}
+					\item Outro aspecto crítico da aplicação é a validação dos dados de entrada para garantir a integridade dos dados. Implementamos testes para funções de validação de entradas dos utilizadores, como a verificação de números de contacto e endereços de e-mail ou a não insereção de valores aleatórios de forma a tentar mandar o sistema a baixo.
+					
+				\end{itemize}
+				
+			\end{itemize}
+
+	A forma mais comum de evitar a ocorrência de erros durante a utilização da aplicação, consiste na implementação de mecanismos de tratamento de erros para lidar com situações inesperadas ou dados inválidos de maneira propositada, de forma a minimizar interrupções no uso da aplicação e melhorando a experiência do utilizador. Isto poderá incluir a exibição de mensagens de erro e a implementação de medidas preventivas como um try, catch para evitar falhas comuns. 
+	
+	% Capítulo 1
+	\section{Comunicação com a Base de Dados}
+		
+	Nesta secção, apresentamos os testes realizados para verificar as funcionalidades das operações de chamada e escrita à base de dados durante todo o uso da aplicação. Estes testes são essenciais para garantir que as operações de leitura, de escrita, de atualização e de exclusão de dados são executados de forma correta, mantendo a integridade e a consistência dos dados armazenados. O principal objetivo destes testes é assegurar que todas as interações com a base de dados sejam realizadas conforme o esperado, sem causar inconsistências ou perdas de dados. Além disso, os testes visam garantir que a aplicação possa lidar com operações da base de dados em diferentes cenários, incluindo condições normais e situações de erro.
+
+	\begin{itemize}
+		\item Teste de Inserção de Dados, que verifica, se a aplicação consegue inserir novos registos na base de dados corretamente.
+		
+		\item Teste de Leitura de Dados, garante que a aplicação consiga recuperar corretamente os dados armazenados na base de dados.
+		
+		\item Teste de Atualização de Dados, verifica se a aplicação consegue modificar registos existentes na base de dados corretamente.
+		
+		\item Teste de Exclusão de Dados, assegura que a aplicação consiga remover registos da base de dados conforme o esperado.
+	\end{itemize}
+	
+	Os testes de chamada à base de dados são essenciais para garantir a integridade e a consistência de toda a aplicação. Ao realizar estes testes, conseguimos assegurar que todas as operações da base de dados são executadas corretamente, proporcionando uma base sólida para o funcionamento da aplicação. Estes testes também nos ajudam a identificar e corrigir problemas de forma precoce, melhorando a robustez e a confiabilidade do sistema.
+	
+	\section{Usabilidade}
+	
+	Os testes de usabilidade são fulcrais para garantir que a aplicação oferece uma experiência intuitiva e eficiente para os utilizadores finais. A usabilidade refere-se à facilidade com que os utilizadores podem aprender a utilizar a aplicação e atingir os seus objetivos de forma eficaz, eficiente e satisfatória. Estes testes ajudam a identificar problemas de design e áreas de melhoria que podem afetar a experiência do utilizador. Para além disso focam-se em aspetos como a facilidade de navegação, a clareza das instruções, a eficiência na execução de tarefas e a satisfação geral dos utilizadores.
+	
+	\begin{itemize}
+	\item Testes Internos:	
+	Os testes internos foram realizados pelos próprios criadores do sistema para identificar problemas óbvios de usabilidade antes de envolver utilizadores externos. Durante esta fase, assumimos o papel de utilizadores e executámos diversas tarefas na aplicação, tomando nota de quaisquer dúvidas ou dificuldades encontradas.
+	
+	\item Testes Externos:
+		Os testes externos envolveram utilizadores finais representativos do público-alvo da aplicação AgroLink. Estes testes foram conduzidos através da vizualização dos mockups e em sessões controladas, onde os utilizadores foram observados enquanto interagiam com a aplicação. Os utilizadores foram convidados a realizar uma série de tarefas típicas e bastante básicas e posteriormente estas interações foram analisadas de forma a fazer os devidos ajustes no design aplicacional.
+	
+	\end{itemize}
+	
+	Os testes de usabilidade são uma parte essencial do processo de desenvolvimento da aplicação e estão permanentemente a ser efetuados, uma vez que atualmente, com a quantidade das ofertas aplicacionais nenhum utilizador elege aplicações com difícil compreensão. Esta realização contínua de testes garantirá que a AgroLink permaneça uma ferramenta útil e eficaz para seus utilizadores.
+	
+	
+	% Conclusão
+	\chapter{Conclusão}
+	Os  testes efetudos na aplicação AgroLink desenvolvida até ao momentos proporcionam  a melhoria do trabalho de implentação, para responder `as necessidades dos utilizadores, de modo a permitir testá-la como uma ferramenta de trabalho, que fomente uma cultura de utilização, ao serviço da agricultura. Esta aplicação é um recurso que deve estar sempre disponível a ser usado como a ferramenta poderosa, que permita estar ao serviço dos gestores da empresa e dos trabalhadores agricolas, garantindo junto dos destes a sua eficiência no serviço prestado. 
+	
+	De futuro e  mantendo a continuidade desta aplicação é importante que se possa sempre receber o feedbact por parte dos ultilizadores para  continuar a garanir a melhor rentabilidade de utilização do sistema.
+	
+	Esperamos que a aplicação AgroLink seja valorizada por todos os que dela tiverem conhecimento. Desejamos que estes estudos que conduzem  o  desenvolvimento aplicacional, a atual implementação e testes, possam continuar ser utilizados pela nossa equipa e por outros alunos, no sentido de se tornarem factor de motivação para a criação e desenvolvimento dos sistemas informáticos no agrícola.
+	
+	
+\end{document}

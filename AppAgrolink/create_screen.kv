@@ -1,0 +1,109 @@
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+<CreateScreen>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1  # Cor branca
+        Rectangle:
+            pos: self.pos
+            size: self.size      
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 7
+        spacing: 10
+        
+
+        # Header com título e botão de voltar
+        BoxLayout:
+            size_hint_y: None
+            height: '60dp'
+            padding: [10, 5, 10, 5]
+            spacing: 10
+
+            Button:
+                text: '<'
+                font_size: '30sp'
+                on_release: app.root.current = 'home'
+                size_hint_x: None
+                width: '50dp'
+                background_color: 1, 1, 1, 0  # Fundo Trasparente
+                color: 1, 1, 1, 1  # Cor do texto verde
+                canvas.before:
+                    Color:
+                        rgba: 0, 0.5, 0, 0.4 # Cor do texto verde
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [20]  # Cantos arredondados
+
+            Label:
+                text: ''
+                size_hint_x: 0.8
+                font_size: '24sp'
+                halign: 'left'
+                valign: 'middle'
+                color: 0, 0.5, 0, 1        
+
+
+    # Campos de entrada centrados
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [20, 600, 20, 50]  # Aumenta padding para centralizar verticalmente
+            spacing: 20
+            halign: 'right'
+ 
+
+        RelativeLayout:
+            size_hint_y: None
+            height: '145dp'  # Defina uma altura apropriada para a área da imagem
+
+            Image:
+                source: r"C:\Users\nunon\Desktop\projetofinal\ProjetoFinal\AppAgrolink\assets\logo.png"
+                size_hint: None, None
+                size: '140dp', '140dp'  # Tamanho da imagem
+                pos_hint: {'center_x': 0.5, 'center_y': 1.5}  # Posiciona no topo e centraliza horizontalmente
+                allow_stretch: True  # Permite esticar a imagem
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            spacing: 10
+            height: '110dp'  # Ajuste a altura para os botões
+            padding: [95, 500, 95, 130]
+
+
+            Button:
+                text: 'Adicionar Empresa'
+                size_hint_y: None
+                height: '50dp'
+                on_release:
+                    app.root.transition = SlideTransition(direction='left', duration=0)
+                    app.root.current = 'createcompany'
+                background_color: 1, 1, 1, 0
+                color: 1, 1, 1, 1  # Cor do texto branco
+                canvas.before:
+                    Color:
+                        rgba: 0, 0.5, 0, 0.8
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [40]  # Cantos arredondados
+
+
+            Button:
+                text: 'Criar Utilizador'
+                size_hint_y: None
+                height: '50dp'
+                on_release:
+                    app.root.transition = SlideTransition(direction='left', duration=0)
+                    app.root.current = app.root.current = 'createuser'
+                background_normal: ''  # Desabilitar o fundo padrão
+                background_color: 1, 1, 1, 0  # Fundo branco
+                color: 0, 0.5, 0, 1  # Cor do texto verde
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 0.1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [40]  # Cantos arredondados

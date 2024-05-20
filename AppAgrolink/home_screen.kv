@@ -38,7 +38,9 @@
                 text: 'Login'
                 size_hint_y: None
                 height: '50dp'
-                on_release: app.root.current = 'login'
+                on_release:
+                    app.root.transition = SlideTransition(direction='left', duration=0)
+                    app.root.current = app.root.current = 'login'
                 background_color: 1, 1, 1, 0
                 color: 1, 1, 1, 1  # Cor do texto branco
                 canvas.before:
@@ -51,10 +53,12 @@
 
 
             Button:
-                text: 'Criar Utilizador'
+                text: 'Criar'
                 size_hint_y: None
                 height: '50dp'
-                on_release: app.root.current = 'create_account'
+                on_release:
+                    app.root.transition = SlideTransition(direction='left', duration=0)
+                    app.root.current = app.root.current = 'create'
                 background_normal: ''  # Desabilitar o fundo padrão
                 background_color: 1, 1, 1, 0  # Fundo branco
                 color: 0, 0.5, 0, 1  # Cor do texto verde

@@ -1,3 +1,4 @@
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
 <LoginScreen>:
     canvas.before:
         Color:
@@ -140,7 +141,7 @@
                 Spinner:
                     text: 'Selecione a Empresa'
                     size_hint_x: 1
-                    values: ['Empresa A', 'Empresa B', 'Empresa C']
+                    values: root.nomes_empresas
                     font_size: '15sp'
                     width: '50dp'  # Largura reduzida
                     size_hint_y: None
