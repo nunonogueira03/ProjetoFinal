@@ -16,7 +16,7 @@
             height: '145dp'  # Defina uma altura apropriada para a área da imagem
 
             Image:
-                source: r"C:\Users\nunon\Desktop\projetofinal\ProjetoFinal\AppAgrolink\assets\logo.png"
+                source: 'assets/logo.png'
                 size_hint: None, None
                 size: '140dp', '140dp'  # Tamanho da imagem
                 pos_hint: {'center_x': 0.5, 'center_y': 1.5}  # Posiciona no topo e centraliza horizontalmente
@@ -40,7 +40,7 @@
                 height: '50dp'
                 on_release:
                     app.root.transition = SlideTransition(direction='left', duration=0)
-                    app.root.current = app.root.current = 'login'
+                    app.root.current = app.root.current = 'firstapppage'
                 background_color: 1, 1, 1, 0
                 color: 1, 1, 1, 1  # Cor do texto branco
                 canvas.before:
@@ -53,12 +53,12 @@
 
 
             Button:
-                text: 'Criar'
+                text: 'Criar Utilizador'
                 size_hint_y: None
                 height: '50dp'
                 on_release:
                     app.root.transition = SlideTransition(direction='left', duration=0)
-                    app.root.current = app.root.current = 'create'
+                    app.root.current = app.root.current = 'createuser'
                 background_normal: ''  # Desabilitar o fundo padrão
                 background_color: 1, 1, 1, 0  # Fundo branco
                 color: 0, 0.5, 0, 1  # Cor do texto verde

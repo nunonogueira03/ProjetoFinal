@@ -1,0 +1,106 @@
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+<PreFraction>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1  # Cor branca
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 7
+        spacing: 10
+        
+
+        # Header com título e botão de voltar
+        BoxLayout:
+            size_hint_y: None
+            height: '60dp'
+            padding: [10, 5, 10, 5]
+            spacing: 10
+
+            Button:
+                text: '<'
+                font_size: '30sp'
+                on_release: app.root.current = 'create_screen'
+                size_hint_x: None
+                width: '50dp'
+                background_color: 1, 1, 1, 0  # Fundo Trasparente
+                color: 1, 1, 1, 1  # Cor do texto verde
+                canvas.before:
+                    Color:
+                        rgba: 0, 0.5, 0, 0.4 # Cor do texto verde
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [20]  # Cantos arredondados
+
+            Label:
+                text: 'Adicionar Frações'
+                size_hint_x: 0.8
+                font_size: '24sp'
+                halign: 'left'
+                valign: 'middle'
+                color: 0, 0.5, 0, 1
+                        
+        BoxLayout:
+            orientation: 'vertical'
+            size: root.width, root.height
+            halign: 'right'
+            padding: 7
+            spacing: 10
+
+            Label:
+                text: 'Como Adicionar:'
+                font_size: 18
+                bold: True
+                color: 0, 0, 0, 1  # Cor do texto verde~
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+
+
+            Label:
+                text: '- Marque os vértice de cada fração do seu terreno.'
+                color: 0, 0, 0, 1  # Cor do texto verde
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]                
+
+            Label:
+                text: '- Adicione uma fração de cada vez.'
+                color: 0, 0, 0, 1  # Cor do texto verde
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+
+            Label:
+                text: '- Quando tiver terminado de adicionar todas as frações marque como concluído.'
+                color: 0, 0, 0, 1  # Cor do texto verde
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: None
+        padding: 40
+        spacing:
+        height: '100dp'  # Ajuste a altura para os botões
+        # Botão de conclusão na parte inferior
+        Button:
+            text: 'Concluído'
+            font_size: '16sp'
+            size_hint_y: None
+            height: '50dp'
+            on_release: app.root.current = 'create_account'
+            background_normal: ''  # Desabilitar o fundo padrão
+            background_color: 1, 1, 1, 0  # Fundo transparente
+            color: 1, 1, 1, 1  # Cor do texto branco
+            canvas.before:
+                Color:
+                    rgba: 0, 0.5, 0, 0.4 # Cor do botao verde
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [30]  # Cantos arredondados           

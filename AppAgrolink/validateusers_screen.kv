@@ -1,0 +1,164 @@
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import MDApp kivymd.app.MDApp
+#:import MDTopAppBar kivymd.uix.toolbar.MDTopAppBar
+#:import MDNavigationDrawer kivymd.uix.navigationdrawer.MDNavigationDrawer
+#:import MDFlatButon kivymd.uix.button.MDFlatButton
+#:import MDRaisedButton kivymd.uix.button.MDRaisedButton
+#:import MDLabel kivymd.uix.label.MDLabel
+#:import MDIconButton kivymd.uix.button.MDIconButton
+#:import MDTextField kivymd.uix.textfield.MDTextField
+#:import MDFloatingActionButton kivymd.uix.button.MDFloatingActionButton
+#:import MDNavigationLayout kivymd.uix.navigationdrawer.MDNavigationLayout
+#:import ScreenManager kivy.uix.screenmanager.ScreenManager
+#:import Screen kivy.uix.screenmanager.Screen
+
+<ListItemWithCheckbox>:
+
+    IconLeftWidget:
+        icon: root.icon
+
+    RightCheckbox:
+        id: rcbox
+
+
+
+<ValidateUsers>:
+    MDNavigationLayout:
+        ScreenManager:
+            Screen:
+                BoxLayout:
+                    orientation: 'vertical'
+                    color: 0, 0.5, 0, 1
+                    MDTopAppBar:
+                        title: 'AgroLink'
+                        left_action_items: [["menu", lambda x: nav_drawer.set_state("toggle")]]
+                        elevation:10 
+                        md_bg_color: [0.29411, 0.6353, 0.4157, 1]
+
+                    BoxLayout:
+                        orientation: 'vertical'
+                        color: 0, 0.5, 0, 1
+                        spacing: '8dp'
+                        padding: '3dp'
+                        size_hint_y: 0.85
+                        ScrollView:
+                            MDList:
+                                id: scroll    
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: 0.13
+                        spacing: 12
+                        padding: 12
+                        height: '110dp'  # Ajuste a altura para os botões
+
+                        Button:
+                            id:selectButton
+                            text: 'Selecionar Todos'
+                            on_release: root.selectall()
+                            background_normal: ''  # Desabilitar o fundo padrão
+                            background_color: 1, 1, 1, 0  # Fundo branco
+                            color: 0, 0.5, 0, 1  # Cor do texto verde
+                            canvas.before:
+                                Color:
+                                    rgba: 0, 0, 0, 0.1
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [40]  # Cantos arredondados
+
+                        Button:
+                            text: 'Autorizar'
+                            on_release: root.autorizar()
+                            background_normal: ''  # Desabilitar o fundo padrão
+                            background_color: 1, 1, 1, 0
+                            color: 1, 1, 1, 1  # Cor do texto branco
+                            canvas.before:
+                                Color:
+                                    rgba: 0, 0.5, 0, 0.8
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [40]  # Cantos arredondados
+
+        MDNavigationDrawer:
+            id: nav_drawer
+            md_bg_color: [1, 1, 1, 0.8]
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: '8dp'
+                padding: '3dp'
+
+                Image:
+                    source: 'assets/agrolink.png'
+                    size_hint_y: None  # Tells the layout to ignore the size_hint in y dir
+                    height: dp(140)  # The fixed height you want
+                MDLabel:
+                    text: '    Agrolink'
+                    bold: True
+                    font_style: 'Subtitle1'
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                  
+
+                ScrollView:
+                    MDList:
+                        OneLineIconListItem:
+                            text: 'Perfil'
+                            on_release: app.root.current = 'firstapppage'
+                            IconLeftWidget:
+                                icon: 'account-circle'
+                                on_release: app.root.current = 'firstapppage'
+                            
+                        OneLineIconListItem:
+                            text: 'Relatórios'
+                            on_release: app.root.current = 'firstapppage'
+                            IconLeftWidget:
+                                icon: 'paperclip'
+                                on_release: app.root.current = 'firstapppage'
+                        OneLineIconListItem:
+                            text: 'Sensores'
+                            on_release: app.root.current = 'firstapppage'
+                            IconLeftWidget:
+                                icon: 'access-point-network'
+                                on_release: app.root.current = 'firstapppage'  
+                        OneLineIconListItem:
+                            text: 'Frações'
+                            on_release: app.root.current = 'firstapppage'
+                            IconLeftWidget:
+                                icon: 'terrain'  
+                                on_release: app.root.current = 'firstapppage'
+                        OneLineIconListItem:
+                            text: 'Comunicados'
+                            on_release: app.root.current = 'firstapppage'
+                            IconLeftWidget:
+                                icon: 'file-clock'
+                                on_release: app.root.current = 'firstapppage'
+                        OneLineIconListItem:
+                            text: 'Termos e Condições'
+                            on_release: app.root.current = 'firstapppage'
+                            IconLeftWidget:
+                                icon: 'alert'
+                                on_release: app.root.current = 'firstapppage'
+                        OneLineIconListItem:
+                            text: 'Terminar Sessão'
+                            on_release: app.root.current = 'home'
+                            IconLeftWidget:
+                                icon: 'door-closed-lock'   
+                                on_release: app.root.current = 'home'
+                        OneLineIconListItem:
+                            text: 'Validar Utilizadores'
+                            on_release: app.root.current = 'validateusers'
+                            IconLeftWidget:
+                                icon: 'account-check'   
+                                on_release: app.root.current = 'validateusers'
+                        OneLineIconListItem:
+                            text: 'Criar Empresa'
+                            on_release: 
+                                nav_drawer.set_state()
+                                app.root.current = 'createcompany'
+                            IconLeftWidget:
+                                icon: 'web'  
+                                on_release: 
+                                    nav_drawer.set_state()
+                                    app.root.current = 'createcompany'          

@@ -36,63 +36,167 @@
                         radius: [20]  # Cantos arredondados
 
             Label:
-                text: 'Login'
+                text: 'Criar Utilizador'
                 size_hint_x: 0.8
                 font_size: '24sp'
                 halign: 'left'
                 valign: 'middle'
                 color: 0, 0.5, 0, 1
                         
-    BoxLayout:
-        orientation: 'vertical'
-        size: root.width, root.height
+        BoxLayout:
+            orientation: 'vertical'
+            size: root.width, root.height
 
-        Label:
-            text: 'Adicionar Empresa'
-            size_hint_y: None
-            height: '48dp'
-            font_size: '20sp'
-
-        ScrollView:
-            do_scroll_x: False  # Desativar rolagem horizontal
-            do_scroll_y: True   # Ativar rolagem vertical
-
-            GridLayout:
-                id: form_layout
+            Label:
+                text: 'Adicionar Empresa'
                 size_hint_y: None
-                width: self.parent.width
-                height: self.minimum_height  # Importante para expandir com o conteúdo
-                cols: 1
-                spacing: '10dp'
-                padding: '10dp'
+                height: '48dp'
+                font_size: '20sp'
 
-                Label:
-                    text: 'Introduza o código para poder prosseguir:'
-                    size_hint_y: None
-                    height: '30dp'
-                TextInput:
-                    size_hint_y: None
-                    height: '48dp'
+            ScrollView:
+                do_scroll_x: False  # Desativar rolagem horizontal
+                do_scroll_y: True   # Ativar rolagem vertical
 
-                Label:
-                    text: 'Nome da empresa:'
+                GridLayout:
+                    id: form_layout
                     size_hint_y: None
-                    height: '30dp'
-                TextInput:
-                    size_hint_y: None
-                    height: '48dp'
+                    width: self.parent.width
+                    height: self.minimum_height  # Importante para expandir com o conteúdo
+                    cols: 1
+                    spacing: '10dp'
+                    padding: '10dp'
+                    
+                    Label:
+                        text: 'Empresa:'
+                        size_hint_y: None
+                        height: '30dp'
+                        color: 0, 0.5, 0, 1
 
-                Label:
-                    text: 'Nome do Gestor da Produção:'
-                    size_hint_y: None
-                    height: '30dp'
-                TextInput:
-                    size_hint_y: None
-                    height: '48dp'
+                    Spinner:
+                        text: 'Selecione a Empresa'
+                        id: empresa_spinner
+                        size_hint_x: 1
+                        values: root.nomes_empresas
+                        font_size: '15sp'
+                        width: '50dp'  # Largura reduzida
+                        size_hint_y: None
+                        size: (10, 55)
+                        background_color: (1, 1, 1, 0)  # Fundo transparente do Spinner propriamente dito
+                        color: (0, 0.5, 0, 1)  # Cor do texto
+                        canvas.before:
+                            Color:
+                                rgba: (0.9, 0.9, 0.9, 1)  # Cor de fundo clara para o retângulo arredondado
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [10]  # Cantos arredondados
+                    Label:
+                        text: 'Número de funcionário:'
+                        size_hint_y: None
+                        height: '30dp'
+                        color: 0, 0.5, 0, 1
+                        
+                    TextInput:
+                        size_hint_y: None
+                        id: numfuncionario_input
+                        height: '48dp'
+                        padding: [10, 10, 10, 10]  # Substituição de padding_x
 
-                # Repetir para outros campos necessários...
+                    Label:
+                        text: 'Nome:'
+                        size_hint_y: None
+                        height: '30dp'
+                        color: 0, 0.5, 0, 1
+                    TextInput:
+                        size_hint_y: None
+                        id: nome_input
+                        height: '48dp'
 
-                Button:
-                    text: 'Próximo'
-                    size_hint_y: None
-                    height: '48dp'        
+                    Label:
+                        text: 'Gmail:'
+                        size_hint_y: None
+                        height: '30dp'
+                        color: 0, 0.5, 0, 1
+                    TextInput:
+                        id: email_input
+                        size_hint_y: None
+                        height: '48dp'
+
+                    Label:
+                        text: 'Password:'
+                        size_hint_y: None
+                        height: '30dp'
+                        color: 0, 0.5, 0, 1
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: '48dp'
+                        spacing: 5
+                        padding: [0, 5, 10, 5]
+
+                        TextInput:
+                            id: input1
+                            password: True
+                            multiline: False
+                            height: '48dp'  # Ajuste a altura para ser menor
+                            hint_text: 'Digite a password'  # Texto de sugestão
+                            hint_text_color: (0, 0, 0, 0.6)  # Cor do texto de sugestão (mais claro)
+                            hint_text_size: '10sp'
+                        ToggleButton:
+                            text: 'Mostrar' if self.state == 'normal' else 'Esconder'
+                            on_release: on_release: input1.password = not input1.password
+                            size_hint_y: None
+                            size_hint_x: None  # Permitir controlar a largura diretamente
+                            width: '80dp'  # Largura reduzida
+                            height: '40dp'
+                            padding: [10, 5, 10, 5]
+                            foreground_color: (0, 0, 0, 1)  # Texto preto para visibilidade
+
+                    Label:
+                        text: 'Validar Password:'
+                        size_hint_y: None
+                        height: '30dp'
+                        color: 0, 0.5, 0, 1
+                    
+                    BoxLayout:
+                        size_hint_y: None
+                        height: '48dp'
+                        spacing: 5
+                        padding: [0, 5, 10, 5]
+
+                        TextInput:
+                            id: input2
+                            password: True
+                            multiline: False
+                            height: '48dp'  # Ajuste a altura para ser menor
+                            hint_text: 'Digite igual ao campo anterior'  # Texto de sugestão
+                            hint_text_color: (0, 0, 0, 0.6)  # Cor do texto de sugestão (mais claro)
+                            hint_text_size: '10sp'
+                        ToggleButton:
+                            text: 'Mostrar' if self.state == 'normal' else 'Esconder'
+                            on_release: input2.password = not input2.password
+                            size_hint_y: None
+                            size_hint_x: None  # Permitir controlar a largura diretamente
+                            width: '80dp'  # Largura reduzida
+                            height: '40dp'
+                            padding: [10, 5, 10, 5]
+                            foreground_color: (0, 0, 0, 1)  # Texto preto para visibilidade
+
+
+
+                    Button:
+                        text: 'Próximo'
+                        size_hint_y: None
+                        height: '50dp'
+                        on_release:
+                            on_release: root.validar_inputs()
+                            app.root.transition = SlideTransition(direction='left', duration=0)
+                        background_color: 1, 1, 1, 0
+                        color: 1, 1, 1, 1  # Cor do texto branco
+                        canvas.before:
+                            Color:
+                                rgba: 0, 0.5, 0, 0.8
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [40]  # Cantos arredondados        

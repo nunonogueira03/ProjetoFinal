@@ -58,14 +58,14 @@
                 padding: [20, 5, 10, 5]
                 
                 Label:
-                    text: 'Nº de Funcionário:'
+                    text: 'Email:'
                     size_hint_x: None
                     font_size: '15sp'
                     halign: 'left'
                     valign: 'middle'
                     color: 0, 0.5, 0, 0.8
                 TextInput:
-                    id: employee_number
+                    id: email_input
                     multiline: False
                     font_size: '15sp'
                     size_hint_y: None
@@ -76,7 +76,7 @@
                     foreground_color: (0, 0, 0, 1)  # Cor do texto para melhor visibilidade
                     background_normal: '1, 1, 1, 0.9'  # Garanta que o background padrão seja removido
                     background_active: '0, 0, 0, 1'  # Garanta que o background ativo também seja removido
-                    hint_text: 'Digite o número'  # Texto de sugestão
+                    hint_text: 'Digite o email'  # Texto de sugestão
                     hint_text_color: (0, 0, 0, 0.6)  # Cor do texto de sugestão (mais claro)
                     hint_text_size: '10sp'
                     text_size: self.size  # Garante que o tamanho do texto corresponda ao tamanho do Spinner
@@ -140,6 +140,7 @@
                     valign: 'middle'
                 Spinner:
                     text: 'Selecione a Empresa'
+                    id: empresa_spinner
                     size_hint_x: 1
                     values: root.nomes_empresas
                     font_size: '15sp'
@@ -167,11 +168,11 @@
 
             # Botão de conclusão na parte inferior
             Button:
-                text: 'Concluído'
+                text: 'Login'
                 font_size: '16sp'
                 size_hint_y: None
                 height: '50dp'
-                on_release: app.root.current = 'create_account'
+                on_release: root.login()
                 background_normal: ''  # Desabilitar o fundo padrão
                 background_color: 1, 1, 1, 0  # Fundo transparente
                 color: 1, 1, 1, 1  # Cor do texto branco
