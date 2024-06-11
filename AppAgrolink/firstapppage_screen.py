@@ -11,7 +11,7 @@ from kivy.uix.popup import Popup
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivy_garden.mapview import MapView, MapMarkerPopup, MapMarker, MapSource, MarkerMapLayer, MapLayer
-from kivy.graphics import Color, Line, Bezier, Ellipse, Triangle, Rectangle
+from kivy.graphics import Color, Line, Bezier, Ellipse, Triangle
 
 class LineMapLayer(MapLayer):
     def __init__(self, points_func, **kwargs):
@@ -54,20 +54,10 @@ class FirstAppPage(Screen):
             self.ids.main_map.add_widget(self.ponto)
 
         self.sensor = MapMarkerPopup(lat=40.20810427464019, lon=-8.451462148859271, source='assets/sensor24.png')
-
-        self.label = Label(text="Sensor Info", size=(self.width * 0.2, self.height * 0.05), pos=(self.sensor.pos[0], self.sensor.pos[1]), color=(0, 0, 0, 1))
-
-        # Adiciona um canvas para o fundo da label
-        with self.label.canvas.before:
-            Color(1, 1, 1, 1)  # Cor branca para o fundo
-            self.rect = Rectangle(pos=self.label.pos, size=self.label.size)
-
-        # Atualiza o tamanho e a posição do retângulo ao mudar a label
-        self.label.bind(pos=self.update_rect, size=self.update_rect)
-
+        self.label = Label(text="Sensor Info", size=(self.width * 0.2, self.height * 0.05), pos=(self.sensor.pos[0], self.sensor.pos[1]))
         self.sensor.add_widget(self.label)
         self.ids.main_map.add_widget(self.sensor)
-
+        
         # Adiciona pontos de teste
         self.pontoteste1 = MapMarkerPopup(lat=40.210293686592486, lon=-8.452273252532457, source='assets/points24.png')
         self.ids.main_map.add_widget(self.pontoteste1)

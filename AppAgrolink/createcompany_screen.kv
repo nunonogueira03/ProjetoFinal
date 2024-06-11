@@ -153,48 +153,65 @@
                 ScrollView:
                     MDList:
                         OneLineIconListItem:
-                            text: 'Perfil'
-                            on_release: app.root.current = 'firstapppage'
-                            IconLeftWidget:
-                                icon: 'account-circle'
-                                on_release: app.root.current = 'firstapppage'
-                            
-                        OneLineIconListItem:
                             text: 'Relatórios'
-                            on_release: app.root.current = 'firstapppage'
+                            on_release: 
+                                nav_drawer.set_state()
+                                app.root.current = 'firstapppage'
                             IconLeftWidget:
                                 icon: 'paperclip'
-                                on_release: app.root.current = 'firstapppage'
+                                on_release: 
+                                    nav_drawer.set_state()
+                                    app.root.current = 'firstapppage'
                         OneLineIconListItem:
                             text: 'Sensores'
-                            on_release: app.root.current = 'firstapppage'
+                            on_release: 
+                                nav_drawer.set_state()
+                                app.root.current = 'firstapppage'
                             IconLeftWidget:
                                 icon: 'access-point-network'
-                                on_release: app.root.current = 'firstapppage'  
+                                on_release: 
+                                    nav_drawer.set_state()
+                                    app.root.current = 'firstapppage'  
                         OneLineIconListItem:
                             text: 'Frações'
-                            on_release: app.root.current = 'firstapppage'
+                            on_release: 
+                                nav_drawer.set_state()
+                                app.root.current = 'firstapppage'
                             IconLeftWidget:
                                 icon: 'terrain'  
-                                on_release: app.root.current = 'firstapppage'
+                                on_release: 
+                                    nav_drawer.set_state()
+                                    app.root.current = 'firstapppage'
                         OneLineIconListItem:
                             text: 'Comunicados'
-                            on_release: app.root.current = 'firstapppage'
+                            on_release: 
+                                nav_drawer.set_state()
+                                app.root.current = 'firstapppage'
                             IconLeftWidget:
                                 icon: 'file-clock'
-                                on_release: app.root.current = 'firstapppage'
+                                on_release: 
+                                    nav_drawer.set_state()
+                                    app.root.current = 'firstapppage'
                         OneLineIconListItem:
                             text: 'Termos e Condições'
-                            on_release: app.root.current = 'firstapppage'
+                            on_release: 
+                                nav_drawer.set_state()
+                                app.root.current = 'firstapppage'
                             IconLeftWidget:
                                 icon: 'alert'
-                                on_release: app.root.current = 'firstapppage'
+                                on_release: 
+                                    nav_drawer.set_state()
+                                    app.root.current = 'firstapppage'
                         OneLineIconListItem:
                             text: 'Terminar Sessão'
-                            on_release: app.root.current = 'home'
+                            on_release: 
+                                nav_drawer.set_state()
+                                app.root.current = 'home'
                             IconLeftWidget:
                                 icon: 'door-closed-lock'   
-                                on_release: app.root.current = 'home'
+                                on_release:
+                                    nav_drawer.set_state() 
+                                    app.root.current = 'home'
                         OneLineIconListItem:
                             text: 'Validar Utilizadores'
                             on_release: 
@@ -211,7 +228,7 @@
                                 nav_drawer.set_state()
                                 app.root.current = 'createcompany'
                             IconLeftWidget:
-                                icon: 'web'   
+                                icon: 'web'  
                                 on_release: 
                                     nav_drawer.set_state()
                                     app.root.current = 'createcompany'            
