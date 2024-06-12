@@ -14,10 +14,12 @@ from email_validator import validate_email, EmailNotValidError
 
 from http import HTTPStatus
 
+cert_path = 'agrolink.crt'
+
 app = Flask(__name__)
 
 # Constantes
-SERVER = 'http://firepuma.isr.tecnico.ulisboa.pt'
+SERVER = 'https://firepuma.isr.tecnico.ulisboa.pt'
 PORT = '5000'
 
 # Dados Sessão
@@ -35,7 +37,7 @@ nomeEmpresa = ''
 # retornar empresas existentes
 def nome_empresas():
 
-    r = requests.get(SERVER + ':' + PORT + '/empresas')
+    r = requests.get(SERVER + ':' + PORT + '/empresas', verify=cert_path)
     
     return [str(item[0]) for item in r.json()]
 
@@ -53,7 +55,7 @@ def adicionar_utilizador(dados_utilizador):
 #Funcao de login
 def login(dados_utilizador):
 
-    r = requests.post(SERVER + ':' + PORT + '/login',json=dados_utilizador)
+    r = requests.post(SERVER + ':' + PORT + '/login',json=dados_utilizador, verify=cert_path)
     print("HTTP resultado:" + str(r.status_code))
     if r.status_code == HTTPStatus.OK:
         global auth_token
@@ -139,4 +141,4 @@ def validar_email(email):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, ssl_context='adhoc')

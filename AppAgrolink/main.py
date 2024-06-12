@@ -13,7 +13,7 @@ from prefraction_screen import PreFraction
 from firstapppage_screen import FirstAppPage
 from validateusers_screen import ValidateUsers
 
-
+import ssl
 
 Builder.load_file('home_screen.kv')
 Builder.load_file('login_screen.kv')
