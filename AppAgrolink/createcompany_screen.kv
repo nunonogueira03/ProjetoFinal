@@ -47,6 +47,7 @@
                                     color: 0, 0.5, 0, 1        
 
                                 TextInput:
+                                    id: nomeempresa
                                     size_hint_y: None
                                     height: '48dp'
                                     padding: [10, 10, 10, 10]  # Substituição de padding_x
@@ -58,6 +59,7 @@
                                     color: 0, 0.5, 0, 1        
 
                                 TextInput:
+                                    id: numerocontribuinte
                                     size_hint_y: None
                                     height: '48dp'
                                     padding: [10, 10, 10, 10]  # Substituição de padding_x
@@ -69,6 +71,7 @@
                                     color: 0, 0.5, 0, 1        
 
                                 TextInput:
+                                    id: morada
                                     size_hint_y: None
                                     height: '48dp'
                                     padding: [10, 10, 10, 10]  # Substituição de padding_x
@@ -87,6 +90,7 @@
 
                                     
                                     Spinner:
+                                        id: paiscontacto
                                         text: '+351'  # Valor inicial do Spinner
                                         values: ['+351', '+34', '+39', '+33', '+41']  # Valores possíveis para o Spinner de paises
                                         size_hint_x: None
@@ -103,6 +107,7 @@
 
 
                                     TextInput:
+                                        id: contacto
                                         hint_text: 'Digite o Contacto'
                                         padding: [10, 10, 10, 10]  # Substituição de padding_x
                                         size_hint_x: 1  # Preencher o espaço restante
@@ -115,8 +120,9 @@
                                     size_hint_y: None
                                     height: '50dp'
                                     on_release:
+                                        root.criar()
                                         app.root.transition = SlideTransition(direction='left', duration=0)
-                                        app.root.current = app.root.current = 'home'
+                                        app.root.current = app.root.current = 'firstapppage'
                                     background_color: 1, 1, 1, 0
                                     color: 1, 1, 1, 1  # Cor do texto branco
                                     canvas.before:

@@ -59,10 +59,10 @@ class FirstAppPage(Screen):
         self.ids.main_map.add_widget(self.sensor)
         
         # Adiciona pontos de teste
-        self.pontoteste1 = MapMarkerPopup(lat=40.210293686592486, lon=-8.452273252532457, source='assets/points24.png')
+        self.pontoteste1 = MapMarkerPopup(lat=40.20766269503174, lon=-8.452334840900821, source='assets/points24.png')
         self.ids.main_map.add_widget(self.pontoteste1)
 
-        self.pontoteste2 = MapMarkerPopup(lat=40.20650720672941, lon=-8.45406067766772, source='assets/points24.png')
+        self.pontoteste2 = MapMarkerPopup(lat=40.20745756204344, lon=-8.45099810157657, source='assets/points24.png')
         self.ids.main_map.add_widget(self.pontoteste2)
 
         # Adiciona a linha entre os dois pontos

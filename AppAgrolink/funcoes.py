@@ -45,7 +45,7 @@ def nome_empresas():
 #Adicionar tabela utilizador 
 def adicionar_utilizador(dados_utilizador):
 
-    r = requests.post(SERVER + ':' + PORT + '/inserirutilizador',json=dados_utilizador)
+    r = requests.post(SERVER + ':' + PORT + '/inserirutilizador',json=dados_utilizador,verify=cert_path)
 
     if r.status_code == HTTPStatus.CREATED:
         return True, "Utilizador e contrato adicionados com sucesso!"
@@ -79,7 +79,7 @@ def utilizadores_verificar():
     print(typeUser)
     print(auth_token)
 
-    r = requests.get(SERVER + ':' + PORT + '/utilizadoresvalidar',json={'typeUser':typeUser,'nomeEmpresa':nomeEmpresa},params=auth_token)
+    r = requests.get(SERVER + ':' + PORT + '/utilizadoresvalidar',params=auth_token,verify=cert_path)
     
     print(" Server DEVOLVEU ISTO")
     print(r.json())
@@ -92,7 +92,7 @@ def utilizadores_verificar():
 # Serviço para autorizar utilizadores
 def autorizarutilizadores(lista):
     global auth_token
-    r = requests.post(SERVER + ':' + PORT + '/autorizarutilizadores',json={'lista':lista},params=auth_token)
+    r = requests.post(SERVER + ':' + PORT + '/autorizarutilizadores',json={'lista':lista},params=auth_token,verify=cert_path)
 
     if r.status_code == HTTPStatus.OK:
         auth_token = {'token': r.json()['token']}
@@ -103,12 +103,12 @@ def autorizarutilizadores(lista):
 # Serviço para chamar os pontos    
 def listapontos():
     pontos = [
-        {'latitude': 40.20762944886895, 'longitude': -8.452273252532457},
-        {'latitude': 40.20652205809148, 'longitude': -8.450938586374384},
-        {'latitude': 40.205568697920356, 'longitude': -8.452024340130727},
-        {'latitude': 40.20903670645027, 'longitude': -8.451256155730796},
-        {'latitude': 40.20611400403246, 'longitude': -8.45172822582709},
-        {'latitude': 40.208553284772826, 'longitude': -8.452097299359146}
+        {'latitude': 40.2056246776543, 'longitude': -8.452967617140807},
+        {'latitude': 40.20599275016009, 'longitude': -8.452816137126316},
+        {'latitude': 40.205842122921936, 'longitude': -8.451877600410231},
+        {'latitude': 40.20554789776591, 'longitude': -8.45205465355142},
+        {'latitude': 40.208533928548924, 'longitude': -8.452068378147759},
+        {'latitude': 40.20815954269777, 'longitude': -8.45066852981359}
     ]
     
     return json.dumps(pontos)
@@ -121,6 +121,15 @@ def listasensores():
     
     return json.dumps(dadossensor)
 
+#Adicionar tabela empresa s
+def adicionar_empresa(dados_empresa):
+
+    r = requests.post(SERVER + ':' + PORT + '/inserirempresa',json=dados_empresa,params=auth_token,verify=cert_path)
+
+    if r.status_code == HTTPStatus.CREATED:
+        return True, "Empresa adicionada com sucesso!"
+    else:
+        return False, "Erro ao adicionar Empresa"
 
 
 ################# Funções Auxiliares #################
